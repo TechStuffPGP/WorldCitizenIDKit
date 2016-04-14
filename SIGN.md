@@ -10,9 +10,15 @@ By timestamping a file's hash on the blockchain, anyone can later verify that th
 
 Files are signed and hashed within the browser. The only data that goes outside of your computer is the hash of the file/signature, which is then posted to the blockchain as metadata in a small Bitcoin transaction, paid for by the user. The data is sent to [Proof of Existence](https://proofofexistence.com), which does the work required to place the file's hash on the blockchain.
 
+In addition, note that all generated signatures and keypairs can be easily downloaded to your computer as a file with the click of a link.
+
 ## Usage
 
 It is very simple to use this webpage. To begin, simply click the "Choose file" button and select a file. The "PGP Signing" and "Blockchain Timestamping" sections will be enabled. To sign the selected file, input your private PGP key and its passphrase if necessary. You can also generate a new PGP private/public keypair if you do not have one already by clicking "Generate a new private/public keypair to use" and then filling out the fields required to create your new key. Then choose either *Raw* or *Base64* to encode the contents. Choosing *Raw* to use the raw contents of the file for the PGP signature is usually best, but in order to preserve the contents of the message next to the signature as Base64 characters and not raw data, choose *Base64*. The signature will be generated in a textarea a few seconds after the user presses the "Generate Signature" button. To timestamp a file or the PGP signature of the file, choose the source for the hash and click "Generate Timestamp". The generated hash, in addition to a Bitcoin address and its QR code should be presented to you. Pay the specified amount of satoshi so Proof of Existence can generate the timestamp on the blockchain. After the specified amount has been paid, hit "Check Payment Status". If the correct amount has been paid, you should be presented with a message confirming that your file has been timestamped on the blockchain (or that it will be shortly when it is confirmed).
+
+## Warnings
+
+Don't be worried if your computer freezes for a little while when generating a PGP keypair or signature! These processes both take anywhere from a few seconds to a few minutes to do the cryptography magic.
 
 ## Technical Explanation
 

@@ -51,6 +51,7 @@
             <li class="active"><a href="#">Home</a></li>
             <li><a href="#about" data-toggle="modal" data-target="#about">About</a></li>
             <li><a href="#contact" data-toggle="modal" data-target="#contact">Contact</a></li>
+            <li><a href="#donate" data-toggle="modal" data-target="#donate">Donate</a></li>
           </ul>
         </div>
       </div>
@@ -97,6 +98,7 @@
             <div>
               <label for="pgp-signature">Signature</label>
               <textarea class="form-control" id="pgp-signature" rows="10" readonly></textarea>
+              <p class="help-block"><a href="#" class="download-signature">Download this signature to your computer</a></p>
             </div>
           </div>
         </div>
@@ -147,8 +149,33 @@
             <h4 class="modal-title">About</h4>
           </div>
           <div class="modal-body">
-            <p>This webpage allows the user to timestamp a file on the blockchain, using either the hash of the file or the hash of a PGP signature of the file (which can be created locally in the browser using this webpage). Users without a PGP keypair can generate one (also client-side) using this webpage.</p>
-            <p>Please see <a href="https://github.com/HardBTC/WorldCitizenIDKit">the GitHub page</a> for more information.</p>
+            <div>
+              <p>Please see <a href="https://github.com/HardBTC/WorldCitizenIDKit">the GitHub repository</a> for more information.</p>
+              <p>This documentation is for the File Signing/Timestamping webpage <code>sign.html</code>. It describes its functionality, usage, technical details, and code.</p>
+              <h3>Functionality</h3>
+              <p>The webpage allows the user to timestamp a file on the blockchain, using either the hash of the file or the hash of a PGP signature of the file (which can be created locally in the browser using the webpage). Users without a PGP keypair can generate one (also client-side) using the webpage.</p>
+              <p>By timestamping a file’s hash on the blockchain, anyone can later verify that the file’s hash (and therefore the file) existed at the point it time when it was timestamped. Since the only thing stored on the blockchain is the hash of the file, the actual contents of the file are not revealed. If the PGP signature of the file is used instead of the file itself as input for the hash function, then it is not only verifiable that the file existed at the time that it was timestamped, but also that owner of the private PGP key signed the file at the time that it was timestamped. This can then potentially be used to prove ownership/creation of the file. For more information with regard to the timestamping part of this tool, please see <a href="https://proofofexistence.com/about">the Proof of Existence about page</a>.</p>
+              <p>Files are signed and hashed within the browser. The only data that goes outside of your computer is the hash of the file/signature, which is then posted to the blockchain as metadata in a small Bitcoin transaction, paid for by the user. The data is sent to <a href="https://proofofexistence.com">Proof of Existence</a>, which does the work required to place the file’s hash on the blockchain.</p>
+              <p>In addition, note that all generated signatures and keypairs can be easily downloaded to your computer as a file with the click of a link.</p>
+              <h3>Usage</h3>
+              <p>It is very simple to use this webpage. To begin, simply click the “Choose file” button and select a file. The “PGP Signing” and “Blockchain Timestamping” sections will be enabled. To sign the selected file, input your private PGP key and its passphrase if necessary. You can also generate a new PGP private/public keypair if you do not have one already by clicking “Generate a new private/public keypair to use” and then filling out the fields required to create your new key. Then choose either <em>Raw</em> or <em>Base64</em> to encode the contents. Choosing <em>Raw</em> to use the raw contents of the file for the PGP signature is usually best, but in order to preserve the contents of the message next to the signature as Base64 characters and not raw data, choose <em>Base64</em>. The signature will be generated in a textarea a few seconds after the user presses the “Generate Signature” button. To timestamp a file or the PGP signature of the file, choose the source for the hash and click “Generate Timestamp”. The generated hash, in addition to a Bitcoin address and its QR code should be presented to you. Pay the specified amount of satoshi so Proof of Existence can generate the timestamp on the blockchain. After the specified amount has been paid, hit “Check Payment Status”. If the correct amount has been paid, you should be presented with a message confirming that your file has been timestamped on the blockchain (or that it will be shortly when it is confirmed).</p>
+              <h3>Warnings</h3>
+              <p>Don’t be worried if your computer freezes for a little while when generating a PGP keypair or signature! These processes both take anywhere from a few seconds to a few minutes to do the cryptography magic.</p>
+              <h3>Technical Explanation</h3>
+              <p>Note that much of the following information is based on text from <a href="https://proofofexistence.com/about">the Proof of Existence about page</a>. For more technical information, you can check there.</p>
+              <p>The document or PGP signature of the document is certified by embedding its SHA256 digest in the bitcoin blockchain. This is done by generating a special bitcoin transaction that encodes/contains the hash via an OP_RETURN script. This is a bitcoin scripting opcode that marks the transaction output as provably unspendable and allows a small amount of data to be inserted. In this case, this information is the document’s hash prefixed by a marker to identify all of Proof of Existence’s transactions.</p>
+              <p>Once the transaction is confirmed, the document or its PGP signature (and therefore also the document) is permanently certified and proven to exist at least as early as the time the transaction was confirmed. If the document hadn’t existed at the time the transaction entered the blockchain, it would have been virtually impossible to embed its digest (or the digest of the PGP signature) in the transaction (This is because of the hash function’s property of being <a href="https://en.wikipedia.org/wiki/Cryptographic_hash_function#Properties">second pre-image resistant</a>). Embedding some hash and then adapting a future document to match the hash is also virtually impossible (due to the pre-image resistance of hash functions). This is why once the bitcoin blockchain confirms the transaction generated for the document, its existence is proven, permanently, with no trust required.</p>
+              <p>When the PGP signature is used as the input for the hash function, one can prove that the owner of the private PGP key signed (and therefore had possesion of) the contents of the file sometime before the generated timestamp. If this is the earliest or only proof of ownership of the file that can be found, one can infer that the private key’s owner did in fact create/own the file.</p>
+              <p>PGP signatures are unique, so when the PGP singature is revealed and someone verifies that the file was signed by the private key that corresponds to the public key he/she verified it with, it is proven that the owner of the private key signed and therefore was in possession of the document at the timestamp recorded on the blockchain.</p>
+              <h3>Code</h3>
+              <p>The webpage is simply an HTML document that includes all necessary CSS and Javascript within the file. All necessary CSS and JS libraries are also included in the same file. All implemented libraries are as follows:</p>
+              <ul>
+                <li><a href="https://jquery.com">jQuery</a></li>
+                <li><a href="http://getbootstrap.com">Bootstrap</a></li>
+                <li><a href="https://openpgpjs.org">OpenPGP.js</a></li>
+                <li><a href="https://github.com/bitwiseshiftleft/sjcl">SJCL</a></li>
+              </ul>
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -164,7 +191,41 @@
             <h4 class="modal-title">Contact</h4>
           </div>
           <div class="modal-body">
-            <p>Please see <a href="https://github.com/HardBTC/WorldCitizenIDKit">the GitHub page</a> for contact information.</p>
+            <p>This project's team contact information is as follows:</p>
+            <ul>
+              <li>
+                <span>Designer/Commissioner: <strong>David Bailey</strong></span>
+                <ul>
+                  <li><strong>Email:</strong> <a href="mailto:davidbailey@hardbtc.org" target="_blank">davidbailey@hardbtc.org</a></li>
+                  <li><strong>Website:</strong> <a href="http://hardbtc.org" target="_blank">http://hardbtc.org</a></li>
+                </ul>
+              </li>
+              <li>
+                <span>Developer: <strong>David Lucid</strong></span>
+                <ul>
+                  <li><strong>Email:</strong> <a href="mailto:davidlucidsl@gmail.com" target="_blank">davidlucidsl@gmail.com</a></li>
+                  <li><strong>Website:</strong> <a href="http://davidlucid.com" target="_blank">http://davidlucid.com</a></li>
+                </ul>
+              </li>
+            </ul>
+            <p>Please see <a href="https://github.com/HardBTC/WorldCitizenIDKit">the GitHub repository</a> for up-to-date contact information.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="donate" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Donate</h4>
+          </div>
+          <div class="modal-body">
+            <p>Please donate to <strong>1Frcm2TDm12oraimDkDARHJe1qw8oHzWpw</strong> if you enjoy using this tool! It helps us continue the development of useful open-source tools like this. Thanks!</p>
+            <img class="img-thumbnail" src="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=bitcoin:1Frcm2TDm12oraimDkDARHJe1qw8oHzWpw">
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -201,10 +262,12 @@
             <div>
               <label for="keys-private">Private Key</label>
               <textarea class="form-control" id="keys-private" rows="10" readonly></textarea>
+              <p class="help-block"><a href="#" class="download-private">Download this private key to your computer</a></p>
             </div>
             <div>
               <label for="keys-public">Public Key</label>
               <textarea class="form-control" id="keys-public" rows="10" readonly></textarea>
+              <p class="help-block"><a href="#" class="download-public">Download this public key to your computer</a></p>
             </div>
           </div>
           <div class="modal-footer">
@@ -431,6 +494,25 @@
             alert(error);
         }
         return false;
+    });
+    /* Download Links */
+    function download(filename, text) {
+        var element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text.replace(/\r?\n/g, "\r\n")));
+        element.setAttribute('download', filename);
+        element.style.display = 'none';
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+    }
+    $('.download-signature').click(function() {
+        download('signature.txt', $('#pgp-signature').val());
+    });
+    $('.download-private').click(function() {
+        download('private.txt', $('#keys-private').val());
+    });
+    $('.download-public').click(function() {
+        download('public.txt', $('#keys-public').val());
     });
     </script>
   </body>

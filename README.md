@@ -18,10 +18,10 @@ Building on from the [ID Cards](http://citizen.cards/) the purpose of this demo 
 
 The code is designed to run in the world’s most popular application, the web browser, and it’s designed to run on the user’s personal computer where they have control.  
 
-There are larger projects that have longer term goals for scaling. 
+There are larger projects that have longer term goals for scaling.
 
 ## Links to Other Project
-Other projects in this space include:    
+Other projects in this space include:
 [Blockstack](https://blockstack.org/)  
 [Ascribe](https://www.ascribe.io/)  
 [Keybase](https://keybase.io)  
@@ -29,7 +29,7 @@ Other projects in this space include:
 
 This is not a complete list and the features overlap and approaches are often different.
 
-## Licence
+## License
 World Citizen ID Kit Copyright (C) 2016 David Bailey
 
 This program is free software: you can redistribute it and/or modify
