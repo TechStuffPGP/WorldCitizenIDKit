@@ -1,35 +1,39 @@
 # World Citizen ID Kit
+
 Client Side PGP Signing and Bitcoin Time Stamping Tool 
 
 ## World Citizen ID Hacks
+
 This is a small client side webpage that forms part of suite of tools following on from the work of Chris Ellis on [World Citizenship](https://github.com/MrChrisJ/World-Citizenship).  
 
 This work was designed and commissioned by David Bailey and written by [David Lucid](http://davidlucid.com/).
 
 ## Instructions
-Simply download the html file above or click on Download Zip/Clone Repo and then load up sign.html in to your browser window.  
 
-You will need an existing PGP key see:  
-[GPG Tools](https://gpgtools.org/gpgsuite.html)  
-[gpg4win](https://www.gpg4win.org/) (Windows users)  
+Simply download the sign.html file from the repository or click on Download Zip/Clone Repo and then load sign.html in your browser window. For detailed usage instructions, see the documentation in SIGN.md.
+
+You will need a private PGP key in order to use this tool. If you don't already have one, you can generate one inside your browser using the tool.
 
 ## Goal and Motivation
-Building on from the [ID Cards](http://citizen.cards/) the purpose of this demo is to as a learning tool to help people understand how these kinds of cryptographic tools can work locally and in a way that is easy to inspect and learn from.  
+
+Building on from the [ID Card Project](http://citizen.cards/), this demo was designed as a learning tool to help people understand how these kinds of cryptographic tools can work locally and in a way that is easy to inspect and learn from.  
 
 The code is designed to run in the world’s most popular application, the web browser, and it’s designed to run on the user’s personal computer where they have control.  
 
 There are larger projects that have longer term goals for scaling.
 
-## Links to Other Project
+## Links to Other Projects
+
 Other projects in this space include:
 [Blockstack](https://blockstack.org/)  
 [Ascribe](https://www.ascribe.io/)  
 [Keybase](https://keybase.io)  
 [identifi](http://identifi.org/)  
 
-This is not a complete list and the features overlap and approaches are often different.
+This is not a complete list. Also, the features overlap and approaches are often different.
 
 ## License
+
 World Citizen ID Kit Copyright (C) 2016 David Bailey
 
 This program is free software: you can redistribute it and/or modify
