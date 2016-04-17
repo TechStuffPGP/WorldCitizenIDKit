@@ -82,7 +82,7 @@
               </div>
               <div class="form-group">
                 <label for="pgp-passphrase">Private Key Passphrase</label>
-                <input type="text" class="form-control" id="pgp-passphrase" placeholder="Optional">
+                <input type="password" class="form-control" id="pgp-passphrase" placeholder="Optional">
               </div>
               <div class="form-group">
                 <label>Message Encoding</label>
@@ -92,13 +92,13 @@
                 </div>
               </div>
               <div class="form-group">
-                <button type="submit" class="btn btn-default">Generate Signature</button>
+                <button type="submit" id="pgp-generate" class="btn btn-default">Generate Signature</button>
+                <button type="button" class="btn btn-default download-signature" disabled>Download Signature</button>
               </div>
             </form>
             <div>
               <label for="pgp-signature">Signature</label>
               <textarea class="form-control" id="pgp-signature" rows="10" readonly></textarea>
-              <p class="help-block"><a href="#" class="download-signature">Download this signature to your computer</a></p>
             </div>
           </div>
         </div>
@@ -117,12 +117,13 @@
                 </div>
               </div>
               <div class="form-group">
-                <button type="submit" class="btn btn-default">Generate Timestamp</button>
+                <button type="submit" id="timestamp-generate" class="btn btn-default">Generate Timestamp</button>
+                <button type="button" class="btn btn-default download-timestamp" disabled>Download Timestamp Report</button>
               </div>
             </form>
             <div class="form-group">
               <label for="timestamp-hash">SHA256 Hash</label>
-              <input type="text" class="form-control" id="timestamp-hash" readonly />
+              <input type="text" class="form-control" id="timestamp-hash" data-signed="0" data-filename="" readonly />
             </div>
             <div id="timestamp-pay">
               <div class="form-group">
@@ -249,25 +250,24 @@
               </div>
               <div class="form-group">
                 <label for="keys-email">Email</label>
-                <input type="text" class="form-control" id="keys-email" placeholder="Email to associate with the generated keys">
+                <input type="email" class="form-control" id="keys-email" placeholder="Email to associate with the generated keys">
               </div>
               <div class="form-group">
                 <label for="keys-passphrase">Passphrase</label>
-                <input type="text" class="form-control" id="keys-passphrase" placeholder="Optionally encrypt your private key">
+                <input type="password" class="form-control" id="keys-passphrase" placeholder="Optionally encrypt your private key">
               </div>
               <div class="form-group">
-                <button type="submit" class="btn btn-default">Generate Keys</button>
+                <button type="submit" id="keys-generate" class="btn btn-default">Generate Keys</button>
+                <button type="button" class="btn btn-default download-keys" disabled>Download Keys</button>
               </div>
             </form>
             <div>
               <label for="keys-private">Private Key</label>
               <textarea class="form-control" id="keys-private" rows="10" readonly></textarea>
-              <p class="help-block"><a href="#" class="download-private">Download this private key to your computer</a></p>
             </div>
             <div>
               <label for="keys-public">Public Key</label>
               <textarea class="form-control" id="keys-public" rows="10" readonly></textarea>
-              <p class="help-block"><a href="#" class="download-public">Download this public key to your computer</a></p>
             </div>
           </div>
           <div class="modal-footer">
@@ -395,21 +395,45 @@
         return false;
     });
     function sign() {
+        // Setup controls
+        $('#pgp-generate').prop('disabled', true);
+        $('#pgp-generate').text("Loading...");
+        
         var message = fr.result.slice(fr.result.indexOf(',') + 1);
         if ($('input[name="pgp-encoding"]:checked').val() != "base64") message = atob(message);
         var private_key = $('#pgp-private-key').val();
         var priv = openpgp.key.readArmored(private_key);
-        if ($('#pgp-passphrase').val().length) priv.keys[0].decrypt($('#pgp-passphrase').val()); 
-        var signOpt = {
-            data: message,
-            privateKeys: priv.keys
-        };
-        try {
-            openpgp.sign(signOpt).then(function(signed) {
-                $('#pgp-signature').val(signed.data);
-            });
-        } catch (error) {
-            alert(error);
+        if ($('#pgp-passphrase').val().length) {
+            try {
+                priv.keys[0].decrypt($('#pgp-passphrase').val());
+            } catch (error) {
+                alert(error);
+            }
+        }
+        if (priv.keys[0].getSigningKeyPacket().isDecrypted) {
+            var signOpt = {
+                data: message,
+                privateKeys: priv.keys
+            };
+            try {
+                openpgp.sign(signOpt).then(function(signed) {
+                    $('#pgp-signature').val(signed.data);
+                    // Setup controls
+                    $('.download-signature').prop('disabled', false);
+                    $('#pgp-generate').prop('disabled', false);
+                    $('#pgp-generate').text("Generate Signature");
+                });
+            } catch (error) {
+                alert(error);
+                // Setup controls
+                $('#pgp-generate').prop('disabled', false);
+                $('#pgp-generate').text("Generate Signature");
+            }
+        } else {
+            alert("This private key has not been decrypted properly. Please check your passphrase.");
+            // Setup controls
+            $('#pgp-generate').prop('disabled', false);
+            $('#pgp-generate').text("Generate Signature");
         }
     }
     /* Timestamping */
@@ -435,6 +459,17 @@
         var bitArray = sjcl.hash.sha256.hash(sjcl.codec.base64.toBits(base64_data));
         var digest_sha256 = sjcl.codec.hex.fromBits(bitArray);
         $('#timestamp-hash').val(digest_sha256);
+        $('#timestamp-hash').data('pgp', '0');
+        
+        var full_path = $('#file-input').val();
+        if (full_path) {
+            var start_index = (full_path.indexOf('\\') >= 0 ? full_path.lastIndexOf('\\') : full_path.lastIndexOf('/'));
+            var filename = full_path.substring(start_index);
+            if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
+                filename = filename.substring(1);
+            }
+        }
+        $('#timestamp-hash').data('filename', filename);
         
         poe();
     }
@@ -443,9 +478,23 @@
         var bitArray = sjcl.hash.sha256.hash(signature);
         var digest_sha256 = sjcl.codec.hex.fromBits(bitArray);
         $('#timestamp-hash').val(digest_sha256);
+        $('#timestamp-hash').data('pgp', '1');
+        
+        var full_path = $('#file-input').val();
+        if (full_path) {
+            var start_index = (full_path.indexOf('\\') >= 0 ? full_path.lastIndexOf('\\') : full_path.lastIndexOf('/'));
+            var filename = full_path.substring(start_index);
+            if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
+                filename = filename.substring(1);
+            }
+        }
+        $('#timestamp-hash').data('filename', filename);
         
         poe();
     }
+    var txid = "";
+    var txstamp = "";
+    var blockstamp = "";
     function poe() {
         $.getJSON('http://query.yahooapis.com/v1/public/yql', {format: 'json', q: 'select * from json where url="http://www.proofofexistence.com/api/v1/register?d=' + encodeURIComponent($('#timestamp-hash').val()) + '"'}, function(data) {
             if (data.query.results.json) {
@@ -456,17 +505,24 @@
                         $.getJSON('http://query.yahooapis.com/v1/public/yql', {format: 'json', q: 'select * from json where url="http://www.proofofexistence.com/api/v1/status?d=' + encodeURIComponent($('#timestamp-hash').val()) + '"'}, function(data) {
                             if (data.query.results.json) {
                                 if (data.query.results.json.pending == "true") {
-                                    $('#timestamp-pay div').html('<p>Payment has not been received yet. Please send <strong>' + timestamp_price + '</strong> satoshi to <strong>' + data.query.results.json.payment_address + '</strong> and click "Check Payment Status" below.</p><img class="img-thumbnail" src="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' + encodeURIComponent('bitcoin:' + data.query.results.json.payment_address + '?amount=' + timestamp_price/100000000) + '">');
+                                    $('#timestamp-pay div').html('<p>Payment has not been received yet. Please send <strong>' + timestamp_price + '</strong> BTC to <strong>' + data.query.results.json.payment_address + '</strong> and click "Check Payment Status" below.</p><img class="img-thumbnail" src="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' + encodeURIComponent('bitcoin:' + data.query.results.json.payment_address + '?amount=' + timestamp_price) + '">');
                                 } else if (data.query.results.json.blockstamp) {
                                     $('#timestamp-pay div').html('<p>Payment has been received, and the timestamp transaction has been sent. The transaction (hash <strong>' + data.query.results.json.tx + '</strong>) was sent at <strong>' + data.query.results.json.txstamp + '</strong>. The timestamp of the block containing the transaction is <strong>' + data.query.results.json.blockstamp + '</strong>. Keep in mind that if this timestamp was generated using a PGP signature, be sure to save the signature, because re-signing the file will produce a different hash!</p>.');
+                                    txid = data.query.results.json.tx;
+                                    txstamp = data.query.results.json.txstamp;
+                                    blockstamp = data.query.results.json.blockstamp;
+                                    $('.download-timestamp').prop('disabled', false);
                                 } else {
                                     $('#timestamp-pay div').html('<p>Payment has been received, and the timestamp transaction has been sent. The transaction (hash <strong>' + data.query.results.json.tx + '</strong>) was sent at <strong>' + data.query.results.json.txstamp + '</strong>. Check back in a few minutes if you would like to see the timestamp of the block containing the transaction. Also, keep in mind that if this timestamp was generated using a PGP signature, be sure to save the signature, because re-signing the file will produce a different hash!</p>');
+                                    txid = data.query.results.json.tx;
+                                    txstamp = data.query.results.json.txstamp;
+                                    $('.download-timestamp').prop('disabled', false);
                                 }
                             }
                         });
                     });
-                    timestamp_price = data.query.results.json.price;
-                    $('#timestamp-pay div').html('<p>Please send <strong>' + timestamp_price + '</strong> satoshi to <strong>' + data.query.results.json.pay_address + '</strong> and click "Check Payment Status" below.</p><img class="img-thumbnail" src="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' + encodeURIComponent('bitcoin:' + data.query.results.json.pay_address + '?amount=' + timestamp_price/100000000) + '">');
+                    timestamp_price = data.query.results.json.price/100000000;
+                    $('#timestamp-pay div').html('<p>Please send <strong>' + timestamp_price + '</strong> BTC to <strong>' + data.query.results.json.pay_address + '</strong> and click "Check Payment Status" below.</p><img class="img-thumbnail" src="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' + encodeURIComponent('bitcoin:' + data.query.results.json.pay_address + '?amount=' + timestamp_price) + '">');
                 } else if (data.query.results.json.reason == "existing") {
                     alert('This timestamp request has already been made.');
                 } else {
@@ -477,6 +533,8 @@
     }
     /* Key Generation */
     $('#keys-form').submit(function() {
+        $('#keys-generate').prop('disabled', true);
+        $('#keys-generate').text("Loading...");
         var options = {
             userIds: [{name: $('#keys-name').val(), email: $('#keys-email').val()}],
             numBits: 4096
@@ -489,13 +547,21 @@
                 $('#keys-private').val(privkey);
                 $('#keys-public').val(pubkey);
                 $('#pgp-private-key').val(privkey);
+                // Setup controls
+                $('.download-keys').prop('disabled', false);
+                $('#keys-generate').prop('disabled', false);
+                $('#keys-generate').text("Generate Keys");
             });
         } catch (error) {
+            if (error = "Invalid user id format") error = "Your name or email is formatted incorrectly.";
             alert(error);
+            // Setup controls
+            $('#keys-generate').prop('disabled', false);
+            $('#keys-generate').text("Generate Keys");
         }
         return false;
     });
-    /* Download Links */
+    /* Download Buttons */
     function download(filename, text) {
         var element = document.createElement('a');
         element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text.replace(/\r?\n/g, "\r\n")));
@@ -506,13 +572,16 @@
         document.body.removeChild(element);
     }
     $('.download-signature').click(function() {
-        download('signature.txt', $('#pgp-signature').val());
+        download('signature_' + $('#file-name').text() + '.txt', $('#pgp-signature').val());
     });
-    $('.download-private').click(function() {
-        download('private.txt', $('#keys-private').val());
+    $('.download-keys').click(function() {
+        var filename = prompt("Please enter a desired filename to download the keys.", "keys.txt");
+        if (filename != null) download(filename, "Name: " + $('#keys-name').val() + "\nEmail: " + $('#keys-email').val() + "\nPassphrase: " + $('#keys-passphrase').val() + "\n\nPrivate Key:\n\n" + $('#keys-private').val() + "\n\nPublic Key:\n\n" + $('#keys-public').val());
     });
-    $('.download-public').click(function() {
-        download('public.txt', $('#keys-public').val());
+    $('.download-timestamp').click(function() {
+        var signed = ($('#timestamp-hash').data('pgp') == "1");
+        var report = "Filename: " + $('#timestamp-hash').data('filename') + "\nSHA256 Hash: " + $('#timestamp-hash').val() + "\nSigned Before Hash: " + (signed ? 'Yes' : 'No') + "\nTransaction Hash: " + txid + "\nTransaction Timestamp: " + txstamp + "\nBlock Timestamp: " + blockstamp;
+        download('report_' + $('#file-name').text() + (signed ? '_signed' : '') + '.txt', report);
     });
     </script>
   </body>
