@@ -437,13 +437,21 @@
         }
     }
     /* Timestamping */
-    var timestamp_price;
+    var timestamp_price = "(unknown)";
+    var txid = "";
+    var txstamp = "";
+    var blockstamp = "";
     $('#timestamp-form').submit(function() {
+        // Setup controls
+        $('#timestamp-generate').prop('disabled', true);
+        $('#timestamp-generate').text("Loading...");
+        
         if ($('input[name="timestamp-source"]:checked').val() == "pgp") {
             if ($('#pgp-signature').val().length) {
                 timestampPGP();
             } else {
                 alert('A PGP signature has not been generated yet.');
+                enableGenerateTimestamp();
             }
         } else {
             var file = document.getElementById('file-input').files[0];
@@ -454,6 +462,11 @@
         
         return false;
     });
+    function enableGenerateTimestamp() {
+        // Setup controls
+        $('#timestamp-generate').prop('disabled', false);
+        $('#timestamp-generate').text("Generate Timestamp");
+    }
     function timestampFile() {
         var base64_data = fr.result.slice(fr.result.indexOf(',') + 1);
         var bitArray = sjcl.hash.sha256.hash(sjcl.codec.base64.toBits(base64_data));
@@ -492,41 +505,50 @@
         
         poe();
     }
-    var txid = "";
-    var txstamp = "";
-    var blockstamp = "";
     function poe() {
+        timestamp_price = "(unknown)";
         $.getJSON('http://query.yahooapis.com/v1/public/yql', {format: 'json', q: 'select * from json where url="http://www.proofofexistence.com/api/v1/register?d=' + encodeURIComponent($('#timestamp-hash').val()) + '"'}, function(data) {
             if (data.query.results.json) {
                 if (data.query.results.json.success == "true") {
                     $('#timestamp-pay button').prop('disabled', false);
-                    $('#timestamp-form button').prop('disabled', true);
                     $('#timestamp-pay button').click(function() {
-                        $.getJSON('http://query.yahooapis.com/v1/public/yql', {format: 'json', q: 'select * from json where url="http://www.proofofexistence.com/api/v1/status?d=' + encodeURIComponent($('#timestamp-hash').val()) + '"'}, function(data) {
-                            if (data.query.results.json) {
-                                if (data.query.results.json.pending == "true") {
-                                    $('#timestamp-pay div').html('<p>Payment has not been received yet. Please send <strong>' + timestamp_price + '</strong> BTC to <strong>' + data.query.results.json.payment_address + '</strong> and click "Check Payment Status" below.</p><img class="img-thumbnail" src="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' + encodeURIComponent('bitcoin:' + data.query.results.json.payment_address + '?amount=' + timestamp_price) + '">');
-                                } else if (data.query.results.json.blockstamp) {
-                                    $('#timestamp-pay div').html('<p>Payment has been received, and the timestamp transaction has been sent. The transaction (hash <strong>' + data.query.results.json.tx + '</strong>) was sent at <strong>' + data.query.results.json.txstamp + '</strong>. The timestamp of the block containing the transaction is <strong>' + data.query.results.json.blockstamp + '</strong>. Keep in mind that if this timestamp was generated using a PGP signature, be sure to save the signature, because re-signing the file will produce a different hash!</p>.');
-                                    txid = data.query.results.json.tx;
-                                    txstamp = data.query.results.json.txstamp;
-                                    blockstamp = data.query.results.json.blockstamp;
-                                    $('.download-timestamp').prop('disabled', false);
-                                } else {
-                                    $('#timestamp-pay div').html('<p>Payment has been received, and the timestamp transaction has been sent. The transaction (hash <strong>' + data.query.results.json.tx + '</strong>) was sent at <strong>' + data.query.results.json.txstamp + '</strong>. Check back in a few minutes if you would like to see the timestamp of the block containing the transaction. Also, keep in mind that if this timestamp was generated using a PGP signature, be sure to save the signature, because re-signing the file will produce a different hash!</p>');
-                                    txid = data.query.results.json.tx;
-                                    txstamp = data.query.results.json.txstamp;
-                                    $('.download-timestamp').prop('disabled', false);
-                                }
-                            }
-                        });
+                        checkPOE();
                     });
                     timestamp_price = data.query.results.json.price/100000000;
                     $('#timestamp-pay div').html('<p>Please send <strong>' + timestamp_price + '</strong> BTC to <strong>' + data.query.results.json.pay_address + '</strong> and click "Check Payment Status" below.</p><img class="img-thumbnail" src="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' + encodeURIComponent('bitcoin:' + data.query.results.json.pay_address + '?amount=' + timestamp_price) + '">');
                 } else if (data.query.results.json.reason == "existing") {
-                    alert('This timestamp request has already been made.');
+                    alert('This timestamp request has already been made. Please wait while we retrieve the details of the timestamp.');
+                    $('#timestamp-pay button').prop('disabled', false);
+                    $('#timestamp-pay button').click(function() {
+                        checkPOE();
+                    });
+                    checkPOE();
                 } else {
                     alert('An unknown error occurred.');
+                }
+            } else {
+                alert('An unknown error occurred.');
+            }
+            $('.download-timestamp').prop('disabled', true);
+            enableGenerateTimestamp();
+        });
+    }
+    function checkPOE() {
+        $.getJSON('http://query.yahooapis.com/v1/public/yql', {format: 'json', q: 'select * from json where url="http://www.proofofexistence.com/api/v1/status?d=' + encodeURIComponent($('#timestamp-hash').val()) + '"'}, function(data) {
+            if (data.query.results.json) {
+                if (data.query.results.json.pending == "true") {
+                    $('#timestamp-pay div').html('<p>Payment has not been received yet. Please send <strong>' + timestamp_price + '</strong> BTC to <strong>' + data.query.results.json.payment_address + '</strong> and click "Check Payment Status" below.</p><img class="img-thumbnail" src="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' + encodeURIComponent('bitcoin:' + data.query.results.json.payment_address + '?amount=' + timestamp_price) + '">');
+                } else if (data.query.results.json.blockstamp) {
+                    $('#timestamp-pay div').html('<p>Payment has been received, and the timestamp transaction has been sent. The transaction (hash <strong>' + data.query.results.json.tx + '</strong>) was sent at <strong>' + data.query.results.json.txstamp + '</strong>. The timestamp of the block containing the transaction is <strong>' + data.query.results.json.blockstamp + '</strong>. Keep in mind that if this timestamp was generated using a PGP signature, be sure to save the signature, because re-signing the file will produce a different hash!</p>.');
+                    txid = data.query.results.json.tx;
+                    txstamp = data.query.results.json.txstamp;
+                    blockstamp = data.query.results.json.blockstamp;
+                    $('.download-timestamp').prop('disabled', false);
+                } else {
+                    $('#timestamp-pay div').html('<p>Payment has been received, and the timestamp transaction has been sent. The transaction (hash <strong>' + data.query.results.json.tx + '</strong>) was sent at <strong>' + data.query.results.json.txstamp + '</strong>. Check back in a few minutes if you would like to see the timestamp of the block containing the transaction. Also, keep in mind that if this timestamp was generated using a PGP signature, be sure to save the signature, because re-signing the file will produce a different hash!</p>');
+                    txid = data.query.results.json.tx;
+                    txstamp = data.query.results.json.txstamp;
+                    $('.download-timestamp').prop('disabled', false);
                 }
             }
         });
