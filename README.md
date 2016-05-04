@@ -32,6 +32,10 @@ Other projects in this space include:
 
 This is not a complete list. Also, the features overlap and approaches are often different.
 
+## Code Reviews
+
+Apricity Labs, LLC. - PASSED
+
 ## License
 
 World Citizen ID Kit Copyright (C) 2016 David Bailey
