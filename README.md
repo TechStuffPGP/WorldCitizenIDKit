@@ -34,7 +34,7 @@ This is not a complete list. Also, the features overlap and approaches are often
 
 ## Code Reviews
 
-Apricity Labs, LLC. - PASSED
+Apricity Labs, LLC. - [PASSED](https://github.com/HardBTC/WorldCitizenIDKit/blob/master/Code%20Review/WorldCitizenIDKit-master-Security-Review-One.rtf)
 
 ## License
 
