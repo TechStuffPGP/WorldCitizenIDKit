@@ -417,7 +417,7 @@
             };
             try {
                 openpgp.sign(signOpt).then(function(signed) {
-                    $('#pgp-signature').val(signed.data);
+                    $('#pgp-signature').val(signed.data.trim());
                     // Setup controls
                     $('.download-signature').prop('disabled', false);
                     $('#pgp-generate').prop('disabled', false);
@@ -488,7 +488,7 @@
     }
     function timestampPGP() {
         var signature = $('#pgp-signature').val();
-        var bitArray = sjcl.hash.sha256.hash(signature);
+        var bitArray = sjcl.hash.sha256.hash(signature.replace(/\r?\n/g, "\r\n"));
         var digest_sha256 = sjcl.codec.hex.fromBits(bitArray);
         $('#timestamp-hash').val(digest_sha256);
         $('#timestamp-hash').data('pgp', '1');
