@@ -63,7 +63,7 @@
     <div class="jumbotron">
       <div class="container">
         <h1>File Signing/Timestamping</h1>
-        <p>Thanks for downloading the file signing/timestamping page! With this tool, you can not only prove the existence of a document at a certain time, but also prove who is the creator! This is a standalone HTML document that you can use locally in your browser. Everything happens client side, so you won't have to worry about any of your data going through anyone else (with the exception of the API calls to Proof of Existence).</p>
+        <p>Thanks for downloading the file signing/timestamping page! With this tool, you can not only prove the existence of a document at a certain time, but also prove who is the creator! This is a standalone HTML document that you can use locally in your browser. Everything happens client side, so you won't have to worry about any of your data going through anyone else (with the exception of the hash, of course).</p>
         <p><button class="btn btn-primary btn-lg" id="file-choose">Choose file &raquo;</button><code id="file-name" class="hidden" style="margin-left:15px;"></code></p>
         <div class="hidden"><input type="file" id="file-input" /></div>
       </div>
@@ -128,12 +128,10 @@
               <label for="timestamp-hash">SHA256 Hash</label>
               <input type="text" class="form-control" id="timestamp-hash" data-signed="0" data-filename="" readonly />
             </div>
-            <div id="timestamp-pay">
-              <div class="form-group">
-                <p>Waiting for timestamp generation...</p>
-              </div>
-              <button class="btn btn-default" disabled>Check Payment Status</button>
+            <div class="form-group" id="timestamp-pay">
+              <p>Waiting for timestamp generation...</p>
             </div>
+            <button class="btn btn-default" id="timestamp-check-button" disabled>Check Payment Status</button>
           </div>
         </div>
       </div>
@@ -446,7 +444,6 @@
         }
     }
     /* Timestamping */
-    var timestamp_price = "(unknown)";
     var txid = "";
     var txstamp = "";
     var blockstamp = "";
@@ -493,7 +490,7 @@
         }
         $('#timestamp-hash').data('filename', filename);
         
-        poe();
+        beginAPI();
     }
     function timestampPGP() {
         var signature = $('#pgp-signature').val();
@@ -512,53 +509,44 @@
         }
         $('#timestamp-hash').data('filename', filename);
         
-        poe();
+        beginAPI();
     }
-    function poe() {
-        timestamp_price = "(unknown)";
-        $.getJSON('http://query.yahooapis.com/v1/public/yql', {format: 'json', q: 'select * from json where url="http://www.proofofexistence.com/api/v1/register?d=' + encodeURIComponent($('#timestamp-hash').val()) + '"'}, function(data) {
-            if (data.query.results.json) {
-                if (data.query.results.json.success == "true") {
-                    $('#timestamp-pay button').prop('disabled', false);
-                    $('#timestamp-pay button').click(function() {
-                        checkPOE();
-                    });
-                    timestamp_price = data.query.results.json.price/100000000;
-                    $('#timestamp-pay div').html('<p>Please send <strong>' + timestamp_price + '</strong> BTC to <strong>' + data.query.results.json.pay_address + '</strong> and click "Check Payment Status" below.</p><div class="img-thumbnail" id="qr-payment"></div>');
-                    new QRCode(document.getElementById("qr-payment"), 'bitcoin:' + data.query.results.json.pay_address + '?amount=' + timestamp_price);
-                } else if (data.query.results.json.reason == "existing") {
-                    alert('This timestamp request has already been made. Please wait while we retrieve the details of the timestamp.');
-                    $('#timestamp-pay button').prop('disabled', false);
-                    $('#timestamp-pay button').click(function() {
-                        checkPOE();
-                    });
-                    checkPOE();
-                } else {
-                    alert('An unknown error occurred.');
-                }
+    function beginAPI() {
+        $.getJSON('http://0032-davidlucid.rhcloud.com/timestamp/api.php', {method: "begin", hash: $('#timestamp-hash').val()}, function(data) {
+            if (data.status == "success") {
+                $('#timestamp-check-button').prop('disabled', false);
+                $('#timestamp-pay').html('<p>Please send <strong>' + data.amount/100000000 + '</strong> BTC to <strong>' + data.address + '</strong> and click "Check Payment Status" below.</p><div class="img-thumbnail" id="qr-payment"></div>');
+                new QRCode(document.getElementById("qr-payment"), 'bitcoin:' + data.address + '?amount=' + data.amount/100000000);
+            } else if (data.error == "A request has already been made to generate a timestamp for this hash.") {
+                alert('This timestamp request has already been made. Please wait while we retrieve the details of the timestamp.');
+                $('#timestamp-check-button').prop('disabled', false);
+                checkAPI();
             } else {
-                alert('An unknown error occurred.');
+                alert(data.error);
             }
             $('.download-timestamp').prop('disabled', true);
             enableGenerateTimestamp();
         });
     }
-    function checkPOE() {
-        $.getJSON('http://query.yahooapis.com/v1/public/yql', {format: 'json', q: 'select * from json where url="http://www.proofofexistence.com/api/v1/status?d=' + encodeURIComponent($('#timestamp-hash').val()) + '"'}, function(data) {
-            if (data.query.results.json) {
-                if (data.query.results.json.pending == "true") {
-                    $('#timestamp-pay div').html('<p>Payment has not been received yet. Please send <strong>' + timestamp_price + '</strong> BTC to <strong>' + data.query.results.json.payment_address + '</strong> and click "Check Payment Status" below.</p><div class="img-thumbnail" id="qr-payment"></div>');
-                    new QRCode(document.getElementById("qr-payment"), 'bitcoin:' + data.query.results.json.payment_address + '?amount=' + timestamp_price);
-                } else if (data.query.results.json.blockstamp) {
-                    $('#timestamp-pay div').html('<p>Payment has been received, and the timestamp transaction has been sent. The transaction (hash <strong>' + data.query.results.json.tx + '</strong>) was sent at <strong>' + data.query.results.json.txstamp + '</strong>. The timestamp of the block containing the transaction is <strong>' + data.query.results.json.blockstamp + '</strong>. Keep in mind that if this timestamp was generated using a PGP signature, be sure to save the signature, because re-signing the file will produce a different hash!</p>.');
-                    txid = data.query.results.json.tx;
-                    txstamp = data.query.results.json.txstamp;
-                    blockstamp = data.query.results.json.blockstamp;
+    $('#timestamp-check-button').click(function() {
+        checkAPI();
+    });
+    function checkAPI() {
+        $.getJSON('http://0032-davidlucid.rhcloud.com/timestamp/api.php', {method: "check", hash: $('#timestamp-hash').val()}, function(data) {
+            if (data.status == "success") {
+                if (data.state == "unpaid") {
+                    $('#timestamp-pay ').html('<p>Payment has not been received yet. Please send <strong>' + data.amount/100000000 + '</strong> BTC to <strong>' + data.address + '</strong> and click "Check Payment Status" below.</p><div class="img-thumbnail" id="qr-payment"></div>');
+                    new QRCode(document.getElementById("qr-payment"), 'bitcoin:' + data.address + '?amount=' + data.amount/100000000);
+                } else if (data.state == "confirmed") {
+                    $('#timestamp-pay').html('<p>Payment has been received, and the timestamp transaction has been sent. The transaction (hash <strong>' + data.txid + '</strong>) was sent at <strong>' + data.received + '</strong>. The timestamp of the block containing the transaction is <strong>' + data.confirmed + '</strong>. Keep in mind that if this timestamp was generated using a PGP signature, be sure to save the signature, because re-signing the file will produce a different hash!</p>.');
+                    txid = data.txid;
+                    txstamp = data.received;
+                    blockstamp = data.confirmed;
                     $('.download-timestamp').prop('disabled', false);
-                } else {
-                    $('#timestamp-pay div').html('<p>Payment has been received, and the timestamp transaction has been sent. The transaction (hash <strong>' + data.query.results.json.tx + '</strong>) was sent at <strong>' + data.query.results.json.txstamp + '</strong>. Check back in a few minutes if you would like to see the timestamp of the block containing the transaction. Also, keep in mind that if this timestamp was generated using a PGP signature, be sure to save the signature, because re-signing the file will produce a different hash!</p>');
-                    txid = data.query.results.json.tx;
-                    txstamp = data.query.results.json.txstamp;
+                } else if (data.state == "pushed") {
+                    $('#timestamp-pay').html('<p>Payment has been received, and the timestamp transaction has been sent. The transaction (hash <strong>' + data.txid + '</strong>) was sent at <strong>' + data.received + '</strong>. Check back in a few minutes if you would like to see the timestamp of the block containing the transaction. Also, keep in mind that if this timestamp was generated using a PGP signature, be sure to save the signature, because re-signing the file will produce a different hash!</p>');
+                    txid = data.txid;
+                    txstamp = data.received;
                     $('.download-timestamp').prop('disabled', false);
                 }
             }
