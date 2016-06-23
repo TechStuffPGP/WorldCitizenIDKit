@@ -512,7 +512,7 @@
         beginAPI();
     }
     function beginAPI() {
-        $.getJSON('http://0032-davidlucid.rhcloud.com/timestamp/api.php', {method: "begin", hash: $('#timestamp-hash').val()}, function(data) {
+        $.getJSON('https://0032-davidlucid.rhcloud.com/timestamp/api.php', {method: "begin", hash: $('#timestamp-hash').val()}, function(data) {
             if (data.status == "success") {
                 $('#timestamp-check-button').prop('disabled', false);
                 $('#timestamp-pay').html('<p>Please send <strong>' + data.amount/100000000 + '</strong> BTC to <strong>' + data.address + '</strong> and click "Check Payment Status" below.</p><div class="img-thumbnail" id="qr-payment"></div>');
@@ -532,7 +532,7 @@
         checkAPI();
     });
     function checkAPI() {
-        $.getJSON('http://0032-davidlucid.rhcloud.com/timestamp/api.php', {method: "check", hash: $('#timestamp-hash').val()}, function(data) {
+        $.getJSON('https://0032-davidlucid.rhcloud.com/timestamp/api.php', {method: "check", hash: $('#timestamp-hash').val()}, function(data) {
             if (data.status == "success") {
                 if (data.state == "unpaid") {
                     $('#timestamp-pay ').html('<p>Payment has not been received yet. Please send <strong>' + data.amount/100000000 + '</strong> BTC to <strong>' + data.address + '</strong> and click "Check Payment Status" below.</p><div class="img-thumbnail" id="qr-payment"></div>');
