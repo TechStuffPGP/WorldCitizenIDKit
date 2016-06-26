@@ -16,7 +16,7 @@ In addition, note that all generated signatures, keypairs, and timestamp reports
 
 It is very simple to use this webpage. To begin, simply click the "Choose file" button and select a file. The "PGP Signing" and "Blockchain Timestamping" sections will be enabled.
 
-To sign the selected file, input your private PGP key and its passphrase if necessary. You can also generate a new PGP private/public keypair if you do not have one already by clicking "Generate a new private/public keypair to use" and then filling out the fields required to create your new key. After inputting the private key, choose either *Raw* or *Base64* to encode the contents of the file. Choosing *Raw* to use the raw contents of the file for the PGP signature is usually best for text-based files, but in order to preserve the contents of the message next to the signature as Base64 characters and not raw data, choose *Base64*. The signature will be generated in a textarea a few seconds after the user presses the "Generate Signature" button.
+To sign the selected file, input your private PGP key and its passphrase if necessary. You can also generate a new PGP private/public keypair if you do not have one already by clicking "Generate a new private/public keypair to use" and then filling out the fields required to create your new key. Anyway, the signature will be generated and displayed in textareas (both the raw signature encoded in Base64 as well as the ASCII-armored signature) roughly a few seconds after the user presses the "Generate Signature" button.
 
 To timestamp a file or the PGP signature of the file, choose the source for the hash and click "Generate Timestamp". The generated hash, in addition to a Bitcoin address and its QR code should be presented to you. Pay the specified amount of satoshi so our API can generate the timestamp on the blockchain. After the specified amount has been paid, hit "Check Payment Status". If the correct amount has been paid, you should be presented with a message confirming that your file has been timestamped on the blockchain (or that it will be shortly when it is confirmed).
 
@@ -38,7 +38,7 @@ Both PGP signatures and hashes are second pre-image resistant. Given the PGP sig
 
 ## PGP Signing
 
-Keep the following in mind that when signing a file before timestamping it using this tool. The PGP signature is a cleartext signature, generated either from a raw string representation of the file or a Base64 encoded version of the file (depending on the user's choice under "Message Encoding"). It is presented to you in ASCII armor under the cleartext message from which the signature was generated. When you hash the PGP signature in order to timestamp it on the blockchain, the hash is generated directly from the ASCII-armored signed message and signature in the textarea on the page. All line endings are converted to CRLF before timestamping and also downloading of the signature.
+Keep the following in mind that when signing a file before timestamping it using this tool. The PGP signature is generated directly from the raw bytes of the file, and presented to you as in the textareas as both the raw signature encoded in Base64 as well as the ASCII-armored signature. When you hash the PGP signature in order to timestamp it on the blockchain, the hash is generated directly from the bytes of the raw PGP signature.
 
 ## Code
 
@@ -46,6 +46,6 @@ The webpage is simply an HTML document that includes all necessary CSS and Javas
 
 - [jQuery](https://jquery.com)
 - [Bootstrap](http://getbootstrap.com)
-- [OpenPGP.js](https://openpgpjs.org)
+- [kbpgp](https://keybase.io/kbpgp)
 - [SJCL](https://github.com/bitwiseshiftleft/sjcl)
 - [QRCode.js](https://github.com/davidshimjs/qrcodejs)

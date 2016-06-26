@@ -170,13 +170,13 @@
               <p>When the PGP signature is used as the input for the hash function, one can prove not only that the document existed at the time of the transaction’s confirmation, but also that the owner of the private PGP key signed the contents of the file sometime before the generated timestamp.</p>
               <p>Both PGP signatures and hashes are second pre-image resistant. Given the PGP signature (the hash of which is now in the blockchain), the original file, and the PGP public key, someone can cryptographically verify the signature as a valid signature of the original file by the owner of the public key’s corresponding private key. In other words, the owner of the private key signed and therefore was in possession of the document at the timestamp recorded on the blockchain. If this is the earliest or only proof of ownership of the file that can be found, one can assume that the private key’s owner did in fact create/own the document.</p>
               <h3>PGP Signing</h3>
-              <p>Keep the following in mind that when signing a file before timestamping it using this tool. The PGP signature is a cleartext signature, generated either from a raw string representation of the file or a Base64 encoded version of the file (depending on the user’s choice under “Message Encoding”). It is presented to you in ASCII armor under the cleartext message from which the signature was generated. When you hash the PGP signature in order to timestamp it on the blockchain, the hash is generated directly from the ASCII-armored signed message and signature in the textarea on the page. All line endings are converted to CRLF before timestamping and also downloading of the signature.</p>
+              <p>Keep the following in mind that when signing a file before timestamping it using this tool. The PGP signature is generated directly from the raw bytes of the file, and presented to you as in the textareas as both the raw signature encoded in Base64 as well as the ASCII-armored signature. When you hash the PGP signature in order to timestamp it on the blockchain, the hash is generated directly from the bytes of the raw PGP signature.</p>
               <h3>Code</h3>
               <p>The webpage is simply an HTML document that includes all necessary CSS and Javascript within the file. All necessary CSS and JS libraries are also included in the same file. All implemented libraries are listed as follows:</p>
               <ul>
                 <li><a href="https://jquery.com">jQuery</a></li>
                 <li><a href="http://getbootstrap.com">Bootstrap</a></li>
-                <li><a href="https://openpgpjs.org">OpenPGP.js</a></li>
+                <li><a href="https://keybase.io/kbpgp">kbpgp</a></li>
                 <li><a href="https://github.com/bitwiseshiftleft/sjcl">SJCL</a></li>
                 <li><a href="https://github.com/davidshimjs/qrcodejs">QRCode.js</a></li>
               </ul>
