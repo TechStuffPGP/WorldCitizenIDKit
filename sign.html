@@ -93,12 +93,12 @@
               </div>
             </form>
             <div>
-              <label for="pgp-signature">Raw Signature (Base64)</label>
+              <label for="pgp-signature-raw">Raw Signature (Base64)</label>
               <textarea class="form-control" id="pgp-signature-raw" rows="10" readonly></textarea>
               <p class="help-block">Please note that the hash used for timestamping is generated directly from the raw signature (unencoded/binary), NOT from the ASCII-armored one below.</p>
             </div>
             <div>
-              <label for="pgp-signature">ASCII-Armored Signature</label>
+              <label for="pgp-signature-armored">ASCII-Armored Signature</label>
               <textarea class="form-control" id="pgp-signature-armored" rows="10" readonly></textarea>
             </div>
           </div>
@@ -265,7 +265,7 @@
                 <button type="button" class="btn btn-default download-keys" disabled>Download Keys</button>
               </div>
             </form>
-            <div>
+            <div class="form-group">
               <label for="keys-private">Private Key</label>
               <textarea class="form-control" id="keys-private" rows="10" readonly></textarea>
             </div>
