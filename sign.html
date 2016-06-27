@@ -534,7 +534,6 @@
         beginAPI();
     }
     function timestampPGP() {
-        var signature = $('#pgp-signature').val();
         var bitArray = sjcl.hash.sha256.hash(atob($('#pgp-signature-raw').val()));
         var digest_sha256 = sjcl.codec.hex.fromBits(bitArray);
         $('#timestamp-hash').val(digest_sha256);
@@ -638,7 +637,7 @@
     }
     $('.download-signature').click(function() {
         download($('#file-name').text() + '.sig', $('#pgp-signature-raw').val(), true);
-        download($('#file-name').text() + '.sig.txt', $('#pgp-signature-armored').val());
+        download($('#file-name').text() + '.asc', $('#pgp-signature-armored').val());
     });
     $('.download-keys').click(function() {
         var filename = prompt("Please enter a desired filename to download the keys.", "keys.txt");
