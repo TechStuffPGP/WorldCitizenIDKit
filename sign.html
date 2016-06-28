@@ -422,7 +422,7 @@
         var file = document.getElementById('file-input').files[0];
         fr = new FileReader();
         fr.onload = getKeyAndSign;
-        fr.readAsArrayBuffer(file);
+        fr.readAsBinaryString(file);
         
         return false;
     });
@@ -462,9 +462,9 @@
         });
     }
     function sign(key) {
-        // Sign the ArrayBuffer
+        // Sign the Buffer
         var params = {
-            msg: fr.result,
+            msg: new kbpgp.Buffer(fr.result),
             sign_with: key
         };
 
