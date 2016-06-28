@@ -534,7 +534,7 @@
         beginAPI();
     }
     function timestampPGP() {
-        var bitArray = sjcl.hash.sha256.hash(atob($('#pgp-signature-raw').val()));
+        var bitArray = sjcl.hash.sha256.hash(sjcl.codec.base64.toBits($('#pgp-signature-raw').val()));
         var digest_sha256 = sjcl.codec.hex.fromBits(bitArray);
         $('#timestamp-hash').val(digest_sha256);
         $('#timestamp-hash').data('pgp', '1');
