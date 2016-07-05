@@ -504,7 +504,7 @@
             var file = document.getElementById('file-input').files[0];
             fr = new FileReader();
             fr.onload = timestampFile;
-            fr.readAsDataURL(file);
+            fr.readAsBinaryString(file);
         }
         
         return false;
@@ -515,8 +515,7 @@
         $('#timestamp-generate').text("Generate Timestamp");
     }
     function timestampFile() {
-        var base64_data = fr.result.slice(fr.result.indexOf(',') + 1);
-        var bitArray = sjcl.hash.sha256.hash(sjcl.codec.base64.toBits(base64_data));
+        var bitArray = sjcl.hash.sha256.hash(fr.result);
         var digest_sha256 = sjcl.codec.hex.fromBits(bitArray);
         $('#timestamp-hash').val(digest_sha256);
         $('#timestamp-hash').data('pgp', '0');
