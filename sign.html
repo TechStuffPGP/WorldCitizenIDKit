@@ -129,6 +129,7 @@
             <div class="form-group" id="timestamp-pay">
               <p>Waiting for timestamp generation...</p>
             </div>
+            <button data-toggle="modal" data-target="#paypal" class="btn btn-default" id="timestamp-paypal-button" disabled>Pay with PayPal</button>
             <button class="btn btn-default" id="timestamp-check-button" disabled>Check Payment Status</button>
           </div>
         </div>
@@ -273,6 +274,37 @@
               <label for="keys-public">Public Key</label>
               <textarea class="form-control" id="keys-public" rows="10" readonly></textarea>
             </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="paypal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Pay with PayPal</h4>
+          </div>
+          <div class="modal-body">
+            <p>This button should open a separate tab/window where you can pay $2.00 USD in order to have the necessary Bitcoin delivered to the address shown. After you have paid, simply close this popup and click the "Check Payment Status" button. <strong>Please make sure that this page stays open while you pay at PayPal, or else you will have to go through the whole process again.</strong>
+            <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+              <input type="hidden" name="cmd" value="_xclick">
+              <input type="hidden" name="business" value="davidbailey@hardbtc.org">
+              <input type="hidden" name="lc" value="US">
+              <input type="hidden" name="item_name" value="Blockchain Timestamping">
+              <input type="hidden" name="amount" value="2.00">
+              <input type="hidden" name="currency_code" value="USD">
+              <input type="hidden" name="button_subtype" value="services">
+              <input type="hidden" name="no_note" value="1">
+              <input type="hidden" name="bn" value="PP-BuyNowBF:btn_buynowCC_LG.gif:NonHostedGuest">
+              <input type="hidden" name="custom" value="">
+              <input type="hidden" name="notify_url" value="http://evinceit.com/upload/paypal2.php">
+              <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynowCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!" style="display: block; margin: 0 auto;">
+              <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+            </form>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -556,6 +588,8 @@
                 $('#timestamp-check-button').prop('disabled', false);
                 $('#timestamp-pay').html('<p>Please send <strong>' + data.amount/100000000 + '</strong> BTC to <strong>' + data.address + '</strong> and click "Check Payment Status" below.</p><div class="img-thumbnail" id="qr-payment"></div>');
                 new QRCode(document.getElementById("qr-payment"), 'bitcoin:' + data.address + '?amount=' + data.amount/100000000);
+                $('#timestamp-paypal-button').prop('disabled', false);
+                $('#paypal [name="custom"]').val($('#timestamp-hash').val());
             } else if (data.error == "A request has already been made to generate a timestamp for this hash.") {
                 alert('This timestamp request has already been made. Please wait while we retrieve the details of the timestamp.');
                 $('#timestamp-check-button').prop('disabled', false);
@@ -577,12 +611,14 @@
                     $('#timestamp-pay ').html('<p>Payment has not been received yet. Please send <strong>' + data.amount/100000000 + '</strong> BTC to <strong>' + data.address + '</strong> and click "Check Payment Status" below.</p><div class="img-thumbnail" id="qr-payment"></div>');
                     new QRCode(document.getElementById("qr-payment"), 'bitcoin:' + data.address + '?amount=' + data.amount/100000000);
                 } else if (data.state == "confirmed") {
+                    $('#timestamp-paypal-button').prop('disabled', true);
                     $('#timestamp-pay').html('<p>Payment has been received, and the timestamp transaction has been sent. The transaction (hash <strong>' + data.txid + '</strong>) was sent at <strong>' + data.received + '</strong>. The timestamp of the block containing the transaction is <strong>' + data.confirmed + '</strong>. Keep in mind that if this timestamp was generated using a PGP signature, be sure to save the signature, because re-signing the file will produce a different hash!</p>.');
                     txid = data.txid;
                     txstamp = data.received;
                     blockstamp = data.confirmed;
                     $('.download-timestamp').prop('disabled', false);
                 } else if (data.state == "pushed") {
+                    $('#timestamp-paypal-button').prop('disabled', true);
                     $('#timestamp-pay').html('<p>Payment has been received, and the timestamp transaction has been sent. The transaction (hash <strong>' + data.txid + '</strong>) was sent at <strong>' + data.received + '</strong>. Check back in a few minutes if you would like to see the timestamp of the block containing the transaction. Also, keep in mind that if this timestamp was generated using a PGP signature, be sure to save the signature, because re-signing the file will produce a different hash!</p>');
                     txid = data.txid;
                     txstamp = data.received;
