@@ -155,13 +155,6 @@
                 <textarea class="form-control" id="rsa-sign-private-key" rows="10" placeholder="Paste your private key here..."></textarea>
               </div>
               <div class="form-group">
-                <label>Message Encoding</label>
-                <div>
-                  <label class="radio-inline"><input type="radio" name="rsa-sign-encoding" value="ascii" checked>ASCII</label>
-                  <label class="radio-inline"><input type="radio" name="rsa-sign-encoding" value="base64">Base64</label>
-                </div>
-              </div>
-              <div class="form-group">
                 <label>Hash Algorithm</label>
                 <select class="form-control" id="rsa-sign-hash-algorithm">
                   <option value="sha1">SHA1</option>
@@ -176,7 +169,7 @@
                 <button type="button" class="btn btn-default download-rsa-signature" disabled>Download Signature<span class="show-multi-file">s</span></button>
               </div>
               <div>
-                <label for="rsa-sign-signature">Signature<span class="show-multi-file">s</span> (Hex)</label>
+                <label for="rsa-sign-signature">Signature<span class="show-multi-file">s</span> (Base64)</label>
                 <div class="form-group show-multi-file">
                   <select class="form-control" id="rsa-sign-select" disabled></select>
                 </div>
@@ -189,13 +182,6 @@
               <div class="form-group">
                 <label for="bitcoin-sign-private-key">Private Key (WIF)</label>
                 <textarea class="form-control" id="bitcoin-sign-private-key" rows="10" placeholder="Paste your private key here..."></textarea>
-              </div>
-              <div class="form-group">
-                <label>Message Encoding</label>
-                <div>
-                  <label class="radio-inline"><input type="radio" name="bitcoin-sign-encoding" value="ascii" checked>ASCII</label>
-                  <label class="radio-inline"><input type="radio" name="bitcoin-sign-encoding" value="base64">Base64</label>
-                </div>
               </div>
               <div class="form-group">
                 <button type="submit" id="bitcoin-sign-generate" class="btn btn-default">Generate Signature<span class="show-multi-file">s</span></button>
@@ -312,7 +298,7 @@
               <p>In addition, note that all generated signatures, keypairs, and timestamp reports can be easily downloaded to your computer as text files with the click of a button.</p>
               <h3>Usage</h3>
               <p>It is very simple to use this webpage. To begin, simply click the "Choose file" button and select a file. The "PGP Signing" and "Blockchain Timestamping" sections will be enabled.</p>
-              <p>To sign the selected file, input your private PGP key and its passphrase if necessary. You can also generate a new PGP private/public keypair if you do not have one already by clicking "Generate a new private/public keypair to use" and then filling out the fields required to create your new key. After inputting the private key, choose either <em>Raw</em> or <em>Base64</em> to encode the contents of the file. Choosing <em>Raw</em> to use the raw contents of the file for the PGP signature is usually best for text-based files, but in order to preserve the contents of the message next to the signature as Base64 characters and not raw data, choose <em>Base64</em>. The signature will be generated in a textarea a few seconds after the user presses the "Generate Signature" button.</p>
+              <p>To sign the selected file, input your private PGP key and its passphrase if necessary. You can also generate a new PGP private/public keypair if you do not have one already by clicking "Generate a new private/public keypair to use" and then filling out the fields required to create your new key. Anyway, the signature will be generated and displayed in textareas (both the raw signature encoded in Base64 as well as the ASCII-armored signature) roughly a few seconds after the user presses the "Generate Signature" button.</p>
               <p>To timestamp a file or the PGP signature of the file, choose the source for the hash and click "Generate Timestamp". The generated hash, in addition to a Bitcoin address and its QR code should be presented to you. Pay the specified amount of satoshi so our API can generate the timestamp on the blockchain. After the specified amount has been paid, hit "Check Payment Status". If the correct amount has been paid, you should be presented with a message confirming that your file has been timestamped on the blockchain (or that it will be shortly when it is confirmed).</p>
               <h3>Warnings</h3>
               <p>Don’t be worried if your computer freezes for a little while when generating a PGP signature or keypair! These processes both take anywhere from a few seconds to a few minutes to do the cryptography magic.</p>
@@ -1264,7 +1250,7 @@
                         $('#pgp-enc-go').prop('disabled', false);
                         $('#pgp-enc-go').text("Encrypt File");
                     } else {
-                        alert("Failed to sign the file.");
+                        alert("Failed to encrypt the file.");
                         // Setup controls
                         $('#pgp-enc-go').prop('disabled', false);
                         $('#pgp-enc-go').text("Encrypt File");
@@ -1305,16 +1291,14 @@
         }
         
         var algo = $('#rsa-sign-hash-algorithm').val();
-        var convert_to_ascii = ($('input[name="rsa-sign-encoding"]:checked').val() != "base64");
         
         // Check for multiple files or single file
         var file_count = document.getElementById('file-input').files.length;
         if (file_count > 1) {
             var doNext = function(index) {
-                readFile(index, function(index, file, message) {
-                    if (convert_to_ascii) message = atob(message);
+                readFile(index, function(index, file, result) {
                     try {
-                        var signed = rsa.signString(message, algo);
+                        var signed = new buffer.Buffer(rsa.signString(result, algo), 'hex').toString('base64')
                         bulk_rsa_signatures[index] = {name: file.name, text: signed.trim()};
                         $('#rsa-sign-select').append('<option value="' + index + '">#' + (index + 1) + ": " + file.name + "</option>");
                         if (index + 1 == file_count) {
@@ -1334,26 +1318,25 @@
                         $('#rsa-sign-generate').prop('disabled', false);
                         $('#rsa-sign-generate').text("Generate Signatures");
                     }
-                });
+                }, true);
             };
             doNext(0);
         } else {
-            readFile(0, function(index, file, message) {
-                if (convert_to_ascii) message = atob(message);
+            readFile(0, function(index, file, result) {
                 try {
-                    var signed = rsa.signString(message, algo);
+                    var signed = new buffer.Buffer(rsa.signString(result, algo), 'hex').toString('base64');
                     $('#rsa-sign-signature').val(signed.trim());
                     // Setup controls
                     $('.download-rsa-signature').prop('disabled', false);
                     $('#rsa-sign-generate').prop('disabled', false);
                     $('#rsa-sign-generate').text("Generate Signature");
                 } catch (error) {
-                    alert(error);
+                    alert("Failed to sign the file.");
                     // Setup controls
                     $('#rsa-sign-generate').prop('disabled', false);
                     $('#rsa-sign-generate').text("Generate Signature");
                 }
-            });
+            }, true);
         }
     });
     function byteArraytoBase64(array) {
@@ -1391,17 +1374,14 @@
             $('#bitcoin-sign-generate').text("Generate Signatures");
             return;
         }
-        
-        var convert_to_ascii = ($('input[name="bitcoin-sign-encoding"]:checked').val() != "base64");
-        
+                
         // Check for multiple files or single file
         var file_count = document.getElementById('file-input').files.length;
         if (file_count > 1) {
             var doNext = function(index) {
-                readFile(index, function(index, file, message) {
-                    if (convert_to_ascii) message = atob(message);
+                readFile(index, function(index, file, result) {
                     try {
-                        var bitcoin_signed = bitcoin.message.sign(priv, message);
+                        var bitcoin_signed = bitcoin.message.sign(priv, result);
                         bulk_bitcoin_signatures[index] = {name: file.name, text: byteArraytoBase64(bitcoin_signed).trim()};
                         $('#bitcoin-sign-select').append('<option value="' + index + '">#' + (index + 1) + ": " + file.name + "</option>");
                         if (index + 1 == file_count) {
@@ -1421,31 +1401,25 @@
                         $('#bitcoin-sign-generate').prop('disabled', false);
                         $('#bitcoin-sign-generate').text("Generate Signatures");
                     }
-                });
+                }, true);
             };
             doNext(0);
         } else {
-            readFile(0, function(index, file, message) {
-                if (convert_to_ascii) message = atob(message);
-                var signOpt = {
-                    data: message,
-                    privateKeys: priv.keys
-                };
+            readFile(0, function(index, file, result) {
                 try {
-                    openpgp.sign(signOpt).then(function(signed) {
-                        $('#pgp-sign-signature').val(signed.data.trim());
-                        // Setup controls
-                        $('.download-pgp-signature').prop('disabled', false);
-                        $('#pgp-sign-generate').prop('disabled', false);
-                        $('#pgp-sign-generate').text("Generate Signature");
-                    });
-                } catch (error) {
-                    alert(error);
+                    var bitcoin_signed = bitcoin.message.sign(priv, result);
+                    $('#bitcoin-sign-signature').val(byteArraytoBase64(bitcoin_signed).trim());
                     // Setup controls
-                    $('#pgp-sign-generate').prop('disabled', false);
-                    $('#pgp-sign-generate').text("Generate Signature");
+                    $('.download-bitcoin-signature').prop('disabled', false);
+                    $('#bitcoin-sign-generate').prop('disabled', false);
+                    $('#bitcoin-sign-generate').text("Generate Signatures");
+                } catch (error) {
+                    alert("Failed to sign the file.");
+                    // Setup controls
+                    $('#bitcoin-sign-generate').prop('disabled', false);
+                    $('#bitcoin-sign-generate').text("Generate Signatures");
                 }
-            });
+            }, true);
         }
     });
     $("#bitcoin-sign-select").change(function() {
@@ -1501,10 +1475,9 @@
         var file_count = document.getElementById('file-input').files.length;
         if (file_count > 1) {
             var doNext = function(index) {
-                readFile(index, function(index, file, message) {
-                    message = atob(message);
+                readFile(index, function(index, file, result) {
                     try {
-                        var encrypted = CryptoJS.AES.encrypt(message, key, params).toString();
+                        var encrypted = CryptoJS.AES.encrypt(result, key, params).toString();
                         bulk_aes_encrypts[index] = {name: file.name, text: encrypted.trim()};
                         $('#aes-enc-select').append('<option value="' + index + '">#' + (index + 1) + ": " + file.name + "</option>");
                         if (index + 1 == file_count) {
@@ -1524,14 +1497,13 @@
                         $('#aes-enc-go').prop('disabled', false);
                         $('#aes-enc-go').text("Encrypt Files");
                     }
-                });
+                }, true);
             };
             doNext(0);
         } else {
-            readFile(0, function(index, file, message) {
-                message = atob(message);
+            readFile(0, function(index, file, result) {
                 try {
-                    var encrypted = CryptoJS.AES.encrypt(message, key, params).toString();
+                    var encrypted = CryptoJS.AES.encrypt(result, key, params).toString();
                     $('#aes-enc-data').val(encrypted.trim());
                     
                     // Setup controls
@@ -1544,7 +1516,7 @@
                     $('#aes-enc-go').prop('disabled', false);
                     $('#aes-enc-go').text("Encrypt File");
                 }
-            });
+            }, true);
         }
     });
     $("#aes-enc-select").change(function() {
@@ -1601,21 +1573,21 @@
                 }
             } else if ($('#pgp-method').val() == "rsa-sign") {
                 if ($('#rsa-sign-signature').val().length) {
-                    timestampOther($('#rsa-sign-signature').val(), "rsa-sign");
+                    timestampOther(sjcl.codec.base64.toBits($('#rsa-sign-signature').val()), "rsa-sign");
                 } else {
                     alert('An RSA signature has not been generated yet.');
                     enableGenerateTimestamp();
                 }
             } else if ($('#pgp-method').val() == "bitcoin-sign") {
                 if ($('#bitcoin-sign-signature').val().length) {
-                    timestampOther($('#bitcoin-sign-signature').val(), "bitcoin-sign");
+                    timestampOther(sjcl.codec.base64.toBits($('#bitcoin-sign-signature').val()), "bitcoin-sign");
                 } else {
                     alert('A Bitcoin signature has not been generated yet.');
                     enableGenerateTimestamp();
                 }
             } else if ($('#pgp-method').val() == "aes-enc") {
                 if ($('#aes-enc-data').val().length) {
-                    timestampOther($('#aes-enc-data').val(), "aes-enc");
+                    timestampOther(sjcl.codec.base64.toBits($('#aes-enc-data').val()), "aes-enc");
                 } else {
                     alert('An AES encrypted message has not been generated yet.');
                     enableGenerateTimestamp();
@@ -1820,23 +1792,23 @@
     });
     $('.download-rsa-signature').click(function() {
         if (document.getElementById('file-input').files.length > 1) {
-            downloadBulk("rsa_signatures.zip", bulk_rsa_signatures, ".signed");
+            downloadBulk("rsa_signatures.zip", [{data: bulk_rsa_signatures, extension: ".sig", is_base64: true}]);
         } else {
-            download($('#file-name').text() + '.signed.txt', $('#rsa-sign-signature').val());
+            download($('#file-name').text() + '.sig', $('#rsa-sign-signature').val(), true);
         }
     });
     $('.download-bitcoin-signature').click(function() {
         if (document.getElementById('file-input').files.length > 1) {
-            downloadBulk("bitcoin_signatures.zip", bulk_bitcoin_signatures, ".signed");
+            downloadBulk("bitcoin_signatures.zip", [{data: bulk_bitcoin_signatures, extension: ".sig", is_base64: true}]);
         } else {
-            download($('#file-name').text() + '.signed.txt', $('#bitcoin-sign-signature').val());
+            download($('#file-name').text() + '.sig', $('#bitcoin-sign-signature').val(), true);
         }
     });
     $('.download-aes-encrypted').click(function() {
         if (document.getElementById('file-input').files.length > 1) {
-            downloadBulk("aes_encrypts.zip", bulk_aes_encrypts, ".encrypted");
+            downloadBulk("aes_encrypts.zip", [{data: bulk_aes_encrypts, extension: ".enc", is_base64: true}]);
         } else {
-            download($('#file-name').text() + '.encrypted.txt', $('#aes-enc-data').val());
+            download($('#file-name').text() + '.enc', $('#aes-enc-data').val(), true);
         }
     });
     $('.download-keys').click(function() {
@@ -1854,13 +1826,13 @@
             suffix = ".enc";
         } else if ($('#timestamp-hash').data('method') == "rsa-sign") {
             source = "RSA Signature";
-            suffix = ".signed";
+            suffix = ".sig";
         } else if ($('#timestamp-hash').data('method') == "bitcoin-sign") {
             source = "Bitcoin Signature";
-            suffix = ".signed";
+            suffix = ".sig";
         } else if ($('#timestamp-hash').data('method') == "aes-enc") {
             source = "AES Encrypted Data";
-            suffix = ".encrypted";
+            suffix = ".enc";
         }
         var report = "Filename: " + $('#timestamp-hash').data('filename') + "\nSHA256 Hash: " + $('#timestamp-hash').val() + "\nHash Source: " + source + "\nTransaction Hash: " + txid + "\nTransaction Timestamp: " + txstamp + "\nBlock Timestamp: " + blockstamp;
         download($('#file-name').text() + suffix + '.timestamped.txt', report);
