@@ -626,7 +626,7 @@
         return false;
     });
     /* Download Buttons */
-    function download(filename, data, already_base64 = false) {
+    function download(filename, data, already_base64) {
         var element = document.createElement('a');
         element.setAttribute('href', 'data:application/octet-stream;base64,' + encodeURIComponent(already_base64 ? data : btoa(data.replace(/\r?\n/g, "\r\n"))));
         element.setAttribute('download', filename);
