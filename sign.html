@@ -1244,7 +1244,7 @@
                 readFile(index, function(index, file, result) {
                     // Sign the Buffer
                     var params = {
-                        msg: new kbpgp.Buffer(result),
+                        msg: new kbpgp.Buffer(result, 'base64'),
                         sign_with: key
                     };
                     
@@ -1274,14 +1274,14 @@
                             $('#pgp-sign-generate').text("Generate Signature");
                         }
                     });
-                }, true);
+                });
             };
             doNext(0);
         } else {
             readFile(0, function(index, file, result) {
                 // Sign the Buffer
                 var params = {
-                    msg: new kbpgp.Buffer(result),
+                    msg: new kbpgp.Buffer(result, 'base64'),
                     sign_with: key
                 };
                 
@@ -1300,7 +1300,7 @@
                         $('#pgp-sign-generate').text("Generate Signature");
                     }
                 });
-            }, true);
+            });
         }
     }
     $("#pgp-sign-select").change(function() {
@@ -1348,7 +1348,7 @@
                 readFile(index, function(index, file, result) {
                     // Encrypt the Buffer
                     var params = {
-                        msg: new kbpgp.Buffer(result),
+                        msg: new kbpgp.Buffer(result, 'base64'),
                         encrypt_for: key
                     };
                     
@@ -1378,14 +1378,14 @@
                             $('#pgp-enc-go').text("Encrypt Files");
                         }
                     });
-                }, true);
+                });
             };
             doNext(0);
         } else {
             readFile(0, function(index, file, result) {
                 // Encrypt the Buffer
                 var params = {
-                    msg: new kbpgp.Buffer(result),
+                    msg: new kbpgp.Buffer(result, 'base64'),
                     encrypt_for: key
                 };
                 
@@ -1404,7 +1404,7 @@
                         $('#pgp-enc-go').text("Encrypt File");
                     }
                 });
-            }, true);
+            });
         }
     }
     $("#pgp-enc-select").change(function() {
