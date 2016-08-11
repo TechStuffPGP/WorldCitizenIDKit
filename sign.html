@@ -72,6 +72,7 @@
     <div class="container">
       <div class="row">
         <div class="col-md-6">
+          <!-- Signing & Encryption -->
           <h2>Signing &amp; Encryption</h2>
           <div class="hide-later">
             <p>Please choose a file first.</p>
@@ -268,6 +269,7 @@
           </div>
         </div>
         <div class="col-md-6">
+          <!-- Blockchain Timestamping -->
           <h2>Blockchain Timestamping</h2>
           <div class="hide-later">
             <p>Please choose a file first.</p>
@@ -296,6 +298,167 @@
             <button data-toggle="modal" data-target="#paypal" class="btn btn-default" id="timestamp-paypal-button" disabled>Pay with PayPal</button>
             <a href="https://chrome.google.com/webstore/detail/protip-peer-to-peer-crowd/obpohohcmdaklmaagjgdaldgjhohegak" target="_blank" class="btn btn-default disabled" id="timestamp-protip-button">Pay with ProTip</a>
             <button class="btn btn-default" id="timestamp-check-button" disabled>Check Payment Status</button>
+          </div>
+          
+          <!-- Verification & Decryption -->
+          <h2>Verification &amp; Decryption</h2>
+          <div class="hide-later">
+            <p>Please choose a file first.</p>
+          </div>
+          <div class="show-later hidden">
+            <div class="form-group">
+              <label for="vd-method">Method</label>
+              <select class="form-control" id="vd-method">
+                <!--<option value="pgp-verify">PGP Verification</option>-->
+                <option value="pgp-dec">PGP Decryption</option>
+                <!--<option value="rsa-verify">RSA Verification</option>-->
+                <option value="rsa-dec">RSA Decryption</option>
+                <!--<option value="bitcoin-verify">Bitcoin Verification</option>-->
+                <option value="aes-dec">AES Decryption</option>
+              </select>
+            </div>
+            
+            <!-- PGP Verification -->
+            <form id="pgp-verify-form" class="hidden">
+              <div class="form-group">
+                <label for="pgp-verify-public-key">Public Key</label>
+                <textarea class="form-control" id="pgp-verify-public-key" rows="10" placeholder="Paste the signer's public key here..."></textarea>
+              </div>
+              <div class="form-group">
+                <button type="submit" id="pgp-verify-go" class="btn btn-default">Verify Signature<span class="show-multi-file">s</span></button>
+                <button type="button" class="btn btn-default download-pgp-verified" disabled>Download Original File<span class="show-multi-file">s</span></button>
+              </div>
+              <div>
+                <label for="pgp-verify-results">Results</label>
+                <textarea class="form-control" id="pgp-verify-results" rows="10" readonly></textarea>
+              </div>
+            </form>
+            
+            <!-- PGP Decryption -->
+            <form id="pgp-dec-form">
+              <div class="form-group">
+                <label for="pgp-dec-private-key">Private Key</label>
+                <textarea class="form-control" id="pgp-dec-private-key" rows="10" placeholder="Paste your private key here..."></textarea>
+              </div>
+              <div class="form-group">
+                <label for="pgp-dec-passphrase">Private Key Passphrase</label>
+                <input type="password" class="form-control" id="pgp-dec-passphrase" placeholder="Optional">
+              </div>
+              <div class="form-group">
+                <label>Input Encoding</label>
+                <div>
+                  <label class="radio-inline"><input type="radio" name="pgp-dec-encoding" value="raw" checked>Raw</label>
+                  <label class="radio-inline"><input type="radio" name="pgp-dec-encoding" value="armored">ASCII-Armored</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <button type="submit" id="pgp-dec-go" class="btn btn-default">Decrypt File<span class="show-multi-file">s</span></button>
+                <button type="button" class="btn btn-default download-pgp-decrypted" disabled>Download Decrypted File<span class="show-multi-file">s</span></button>
+              </div>
+              <div>
+                <label for="pgp-dec-results">Results</label>
+                <textarea class="form-control" id="pgp-dec-results" rows="10" readonly></textarea>
+              </div>
+            </form>
+            
+            <!-- RSA Verification -->
+            <form id="rsa-verify-form" class="hidden">
+              <div class="form-group">
+                <label for="rsa-verify-public-key">Public Key</label>
+                <textarea class="form-control" id="rsa-verify-public-key" rows="10" placeholder="Paste the signer's public key here..."></textarea>
+              </div>
+              <div class="form-group">
+                <label>Hash Algorithm</label>
+                <select class="form-control" id="rsa-verify-hash-algorithm">
+                  <option value="sha1">SHA1</option>
+                  <option value="sha256" selected>SHA256</option>
+                  <option value="sha512">SHA512</option>
+                  <option value="md5">MD5</option>
+                  <option value="ripemd160">RIPEMD-160</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <button type="submit" id="rsa-verify-go" class="btn btn-default">Verify Signature<span class="show-multi-file">s</span></button>
+                <button type="button" class="btn btn-default download-rsa-verified" disabled>Download Results</button>
+              </div>
+              <div>
+                <label for="rsa-verify-results">Results</label>
+                <textarea class="form-control" id="rsa-verify-results" rows="10" readonly></textarea>
+              </div>
+            </form>
+            
+            <!-- RSA Decryption -->
+            <form id="rsa-dec-form" class="hidden">
+              <div class="form-group">
+                <label for="rsa-dec-private-key">Private Key</label>
+                <textarea class="form-control" id="rsa-dec-private-key" rows="10" placeholder="Paste your private key here..."></textarea>
+              </div>
+              <div class="form-group">
+                <button type="submit" id="rsa-dec-go" class="btn btn-default">Decrypt File<span class="show-multi-file">s</span></button>
+                <button type="button" class="btn btn-default download-rsa-decrypted" disabled>Download Decrypted File<span class="show-multi-file">s</span></button>
+              </div>
+              <div>
+                <label for="rsa-dec-results">Results</label>
+                <textarea class="form-control" id="rsa-dec-results" rows="10" readonly></textarea>
+              </div>
+            </form>
+            
+            <!-- Bitcoin Verification -->
+            <form id="bitcoin-verify-form" class="hidden">
+              <div class="form-group">
+                <label for="bitcoin-verify-address">Bitcoin Address</label>
+                <input type="text" class="form-control" id="bitcoin-verify-address" placeholder="Paste the signer's Bitcoin address here...">
+              </div>
+              <div class="form-group">
+                <button type="submit" id="bitcoin-verify-go" class="btn btn-default">Verify Signature<span class="show-multi-file">s</span></button>
+                <button type="button" class="btn btn-default download-bitcoin-verified" disabled>Download Results</button>
+              </div>
+              <div>
+                <label for="bitcoin-verify-results">Results</label>
+                <textarea class="form-control" id="bitcoin-verify-results" rows="10" readonly></textarea>
+              </div>
+            </form>
+            
+            <!-- AES Decryption -->
+            <form id="aes-dec-form" class="hidden">
+              <div class="form-group">
+                <label>Mode</label>
+                <div>
+                  <label class="radio-inline"><input type="radio" name="aes-dec-mode" value="cbc" checked>CBC</label>
+                  <label class="radio-inline"><input type="radio" name="aes-dec-mode" value="cfb">CFB</label>
+                  <label class="radio-inline"><input type="radio" name="aes-dec-mode" value="ctr">CTR</label>
+                  <label class="radio-inline"><input type="radio" name="aes-dec-mode" value="ofb">OFB</label>
+                  <label class="radio-inline"><input type="radio" name="aes-dec-mode" value="ecb">ECB</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Key Source</label>
+                <div>
+                  <label class="radio-inline"><input type="radio" name="aes-dec-key-source" value="passphrase" checked>Passphrase</label>
+                  <label class="radio-inline"><input type="radio" name="aes-dec-key-source" value="key">Key/IV</label>
+                </div>
+              </div>
+              <div class="form-group aes-dec-group-passphrase">
+                <label for="aes-dec-passphrase">Passphrase</label>
+                <input type="password" class="form-control" id="aes-dec-passphrase">
+              </div>
+              <div class="form-group hidden aes-dec-group-key">
+                <label for="aes-dec-key">Key (Hex)</label>
+                <input type="password" class="form-control" id="aes-dec-key">
+              </div>
+              <div class="form-group hidden aes-dec-group-iv">
+                <label for="aes-dec-iv">IV (Hex)</label>
+                <input type="password" class="form-control" id="aes-dec-iv">
+              </div>
+              <div class="form-group">
+                <button type="submit" id="aes-dec-go" class="btn btn-default">Decrypt File<span class="show-multi-file">s</span></button>
+                <button type="button" class="btn btn-default download-aes-decrypted" disabled>Download Decrypted File<span class="show-multi-file">s</span></button>
+              </div>
+              <div>
+                <label for="aes-dec-results">Results</label>
+                <textarea class="form-control" id="aes-dec-results" rows="10" readonly></textarea>
+              </div>
+            </form>
           </div>
         </div>
       </div>
@@ -1137,6 +1300,34 @@
                 break;
         }
     });
+    $("#vd-method").change(function() {
+        switch ($(this).val()) {
+            case "pgp-verify":
+                $("#pgp-verify-form").siblings("form").addClass("hidden");
+                $("#pgp-verify-form").removeClass("hidden");
+                break;
+            case "pgp-dec":
+                $("#pgp-dec-form").siblings("form").addClass("hidden");
+                $("#pgp-dec-form").removeClass("hidden");
+                break;
+            case "rsa-verify":
+                $("#rsa-verify-form").siblings("form").addClass("hidden");
+                $("#rsa-verify-form").removeClass("hidden");
+                break;
+            case "rsa-dec":
+                $("#rsa-dec-form").siblings("form").addClass("hidden");
+                $("#rsa-dec-form").removeClass("hidden");
+                break;
+            case "bitcoin-verify":
+                $("#bitcoin-verify-form").siblings("form").addClass("hidden");
+                $("#bitcoin-verify-form").removeClass("hidden");
+                break;
+            case "aes-dec":
+                $("#aes-dec-form").siblings("form").addClass("hidden");
+                $("#aes-dec-form").removeClass("hidden");
+                break;
+        }
+    });
     /* Drag and Drop */
     $(document).on('drag dragstart dragend dragover dragenter dragleave drop', function(e) {
         e.preventDefault();
@@ -1531,7 +1722,7 @@
             var doNext = function(index) {
                 readFile(index, function(index, file, result) {
                     try {
-                        if ($('#rsa-enc-hash').prop("checked")) result = CryptoJS.enc.Base64.parse(sjcl.codec.base64.fromBits(sjcl.hash.sha256.hash(result)));
+                        if ($('#rsa-enc-hash').prop("checked")) result = atob(sjcl.codec.base64.fromBits(sjcl.hash.sha256.hash(sjcl.codec.base64.toBits(result))));
                         
                         var encrypted = crypt.encrypt(result);
                         bulk_rsa_encrypts[index] = {name: file.name, text: encrypted.trim()};
@@ -1553,14 +1744,14 @@
                         $('#rsa-enc-go').prop('disabled', false);
                         $('#rsa-enc-go').text("Encrypt Files");
                     }
-                }, true);
+                });
             };
             doNext(0);
         } else {
             readFile(0, function(index, file, result) {
                 try {
-                    if ($('#rsa-enc-hash').prop("checked")) result = atob(sjcl.codec.base64.fromBits(sjcl.hash.sha256.hash(result)));
-                    console.log(result);
+                    if ($('#rsa-enc-hash').prop("checked")) result = atob(sjcl.codec.base64.fromBits(sjcl.hash.sha256.hash(sjcl.codec.base64.toBits(result))));
+                    
                     var encrypted = crypt.encrypt(result);
                     $('#rsa-enc-message').val(encrypted.trim());
                     // Setup controls
@@ -1573,7 +1764,7 @@
                     $('#rsa-enc-go').prop('disabled', false);
                     $('#rsa-enc-go').text("Encrypt File");
                 }
-            }, true);
+            });
         }
     });
     $("#rsa-enc-select").change(function() {
@@ -1776,6 +1967,219 @@
                 break;
         }
     });
+    /* PGP Decryption */
+    var pgp_decrypts = [];
+    $('#pgp-dec-form').submit(function(e) {
+        // Stop submit event
+        e.preventDefault();
+        
+        // Setup controls
+        $('#pgp-dec-go').prop('disabled', true);
+        $('#pgp-dec-go').text("Loading...");
+        
+        // Clear past data
+        $('#pgp-dec-results').val("");
+        pgp_decrypts = [];
+        
+        // Get private key, decrypt if necessary
+        var private_key = $('#pgp-dec-private-key').val();
+        kbpgp.KeyManager.import_from_armored_pgp({
+            armored: private_key
+        }, function(err, key) {
+            if (!err) {
+                var armored = ($('input[name="pgp-dec-encoding"]:checked').val() == "armored");
+                if (key.is_pgp_locked()) {
+                    key.unlock_pgp({
+                        passphrase: $('#pgp-dec-passphrase').val()
+                    }, function(err) {
+                        if (!err) {
+                            pgpDec(key, armored);
+                        } else {
+                            alert("This private key could not been decrypted. Please check your passphrase.");
+                            // Setup controls
+                            $('#pgp-dec-go').prop('disabled', false);
+                            $('#pgp-dec-go').text("Decrypt File");
+                        }
+                    });
+                } else {
+                    pgpDec(key, armored);
+                }
+            } else {
+                alert("Failed to load this private key.");
+                // Setup controls
+                $('#pgp-dec-go').prop('disabled', false);
+                $('#pgp-dec-go').text("Decrypt File");
+            }
+        });
+    });
+    function pgpDec(key, armored) {
+        var file_count = document.getElementById('file-input').files.length;
+        var doNext = function(index) {
+            readFile(index, function(index, file, result) {
+                // Decrypt the Buffer
+                var ring = new kbpgp.keyring.KeyRing;
+                ring.add_key_manager(key);
+                
+                var params = {
+                    raw: armored ? undefined : new kbpgp.Buffer(result, 'base64'),
+                    armored: armored ? atob(result) : undefined,
+                    keyfetch: ring
+                };
+                
+                kbpgp.unbox(params, function(err, literals) {
+                    if (!err) {
+                        var original_name = file.name;
+                        if (armored) {
+                            if (file.name.substring(file.name.length - 4, file.name.length) == ".asc") original_name = file.name.substring(0, file.name.length - 4);
+                        } else {
+                            if (file.name.substring(file.name.length - 4, file.name.length) == ".enc") original_name = file.name.substring(0, file.name.length - 4);
+                        }
+                        pgp_decrypts[index] = {name: original_name, buffer: literals[0].toBuffer()};
+                        $('#pgp-dec-results').val($('#pgp-dec-results').val() + "File #" + (index + 1) + " (" + file.name + "): Successfully decrypted\n");
+                    } else {
+                        $('#pgp-dec-results').val($('#pgp-dec-results').val() + "File #" + (index + 1) + " (" + file.name + "): Failed to decrypt; check console\n");
+                        console.log("File #" + (index + 1) + " (" + file.name + "): Failed to decrypt: " + err);
+                    }
+                    
+                    if (index + 1 < file_count) {
+                        doNext(index + 1);
+                    }
+                    
+                    // Setup controls
+                    $('.download-pgp-decrypted').prop('disabled', false);
+                    $('#pgp-dec-go').prop('disabled', false);
+                    $('#pgp-dec-go').text("Decrypt Files");
+                });
+            });
+        };
+        doNext(0);
+    }
+    /* RSA Decryption */
+    var rsa_decrypts = [];
+    $('#rsa-dec-form').submit(function(e) {
+        // Stop submit event
+        e.preventDefault();
+        
+        // Setup controls
+        $('#rsa-dec-go').prop('disabled', true);
+        $('#rsa-dec-go').text("Loading...");
+        
+        // Clear past data
+        $('#rsa-dec-results').val("");
+        rsa_decrypts = [];
+        
+        // Create the encryption object.
+        var crypt = new JSEncrypt();
+
+        // Set the private key
+        crypt.setPrivateKey($('#rsa-dec-private-key').val());
+        
+        // Begin decryption
+        rsaDec(crypt);
+    });
+    function rsaDec(crypt) {
+        var file_count = document.getElementById('file-input').files.length;
+        var doNext = function(index) {
+            readFile(index, function(index, file, result) {
+                try {
+                    var decrypted = crypt.decrypt(result);
+                    if (decrypted !== false && decrypted !== null) {
+                        rsa_decrypts[index] = {name: file.name.substring(file.name.length - 4, file.name.length) == ".enc" ? file.name.substring(0, file.name.length - 4) : file.name, buffer: new buffer.Buffer(btoa(decrypted), 'base64')};
+                        $('#rsa-dec-results').val($('#rsa-dec-results').val() + "File #" + (index + 1) + " (" + file.name + "): Successfully decrypted\n");
+                        if (rsa_decrypts[index].buffer.length == 32) $('#rsa-dec-results').val($('#rsa-dec-results').val() + "File #" + (index + 1) + " (" + file.name + "): Potential SHA256 hash: " + rsa_decrypts[index].buffer.toString('hex') + "\n");
+                    } else {
+                        $('#rsa-dec-results').val($('#rsa-dec-results').val() + "File #" + (index + 1) + " (" + file.name + "): Failed to decrypt\n");
+                    }
+                } catch (error) {
+                    $('#rsa-dec-results').val($('#rsa-dec-results').val() + "File #" + (index + 1) + " (" + file.name + "): Failed to decrypt; check console\n");
+                    console.log("File #" + (index + 1) + " (" + file.name + "): Failed to decrypt: " + error);
+                }
+                
+                if (index + 1 < file_count) {
+                    doNext(index + 1);
+                }
+                
+                // Setup controls
+                $('.download-rsa-decrypted').prop('disabled', false);
+                $('#rsa-dec-go').prop('disabled', false);
+                $('#rsa-dec-go').text("Decrypt Files");
+            });
+        };
+        doNext(0);
+    }
+    /* AES Decryption */
+    var aes_decrypts = [];
+    $('#aes-dec-form').submit(function(e) {
+        // Stop submit event
+        e.preventDefault();
+        
+        // Setup controls
+        $('#aes-dec-go').prop('disabled', true);
+        $('#aes-dec-go').text("Loading...");
+        
+        // Clear past data
+        $('#aes-dec-results').val("");
+        aes_decrypts = [];
+        
+        // Deal with params
+        try {
+            var params = {};
+            if ($('input[name="aes-dec-key-source"]:checked').val() == "key") {
+                var key = CryptoJS.enc.Hex.parse($('#aes-dec-key').val());
+                if ($('input[name="aes-dec-mode"]').val() != "ecb") params.iv = CryptoJS.enc.Hex.parse($('#aes-dec-iv').val());
+            } else {
+                var key = $('#aes-dec-passphrase').val();
+            }
+            // Default mode is CBC
+            switch ($('input[name="aes-dec-mode"]:checked').val()) {
+                case "cfb":
+                    params.mode = CryptoJS.mode.CFB;
+                    break;
+                case "ctr":
+                    params.mode = CryptoJS.mode.CTR;
+                    break;
+                case "ofb":
+                    params.mode = CryptoJS.mode.OFB;
+                    break;
+                case "ecb":
+                    params.mode = CryptoJS.mode.ECB;
+                    break;
+            }
+        } catch (error) {
+            alert(error);
+            // Setup controls
+            $('#aes-dec-go').prop('disabled', false);
+            $('#aes-dec-go').text("Decrypt File");
+        }
+        
+        // Begin decryption
+        aesDec(key, params);
+    });
+    function aesDec(key, params) {
+        var file_count = document.getElementById('file-input').files.length;
+        var doNext = function(index) {
+            readFile(index, function(index, file, result) {
+                try {
+                    var decrypted = CryptoJS.AES.decrypt(btoa(result), key, params).toString(CryptoJS.enc.Utf8);                    
+                    aes_decrypts[index] = {name: file.name.substring(file.name.length - 4, file.name.length) == ".enc" ? file.name.substring(0, file.name.length - 4) : file.name, buffer: new buffer.Buffer(btoa(decrypted), 'base64')};
+                    $('#aes-dec-results').val($('#aes-dec-results').val() + "File #" + (index + 1) + " (" + file.name + "): Successfully decrypted\n");
+                } catch (error) {
+                    $('#aes-dec-results').val($('#aes-dec-results').val() + "File #" + (index + 1) + " (" + file.name + "): Failed to decrypt; check console\n");
+                    console.log("File #" + (index + 1) + " (" + file.name + "): Failed to decrypt: " + error);
+                }
+                
+                if (index + 1 < file_count) {
+                    doNext(index + 1);
+                }
+                
+                // Setup controls
+                $('.download-aes-decrypted').prop('disabled', false);
+                $('#aes-dec-go').prop('disabled', false);
+                $('#aes-dec-go').text("Decrypt Files");
+            }, true);
+        };
+        doNext(0);
+    }
     /* Timestamping */
     var key;
     var txid = "";
@@ -2074,6 +2478,27 @@
             download($('#file-name').text() + '.enc', $('#aes-enc-data').val(), true);
         }
     });
+    $('.download-pgp-decrypted').click(function() {
+        if (document.getElementById('file-input').files.length > 1) {
+            downloadBulkBuffers("pgp_decrypts.zip", [{data: pgp_decrypts}]);
+        } else {
+            download(pgp_decrypts[0].name, pgp_decrypts[0].buffer.toString('base64'), true);
+        }
+    });
+    $('.download-rsa-decrypted').click(function() {
+        if (document.getElementById('file-input').files.length > 1) {
+            downloadBulkBuffers("rsa_decrypts.zip", [{data: rsa_decrypts}]);
+        } else {
+            download(rsa_decrypts[0].name, rsa_decrypts[0].buffer.toString('base64'), true);
+        }
+    });
+    $('.download-aes-decrypted').click(function() {
+        if (document.getElementById('file-input').files.length > 1) {
+            downloadBulkBuffers("aes_decrypts.zip", [{data: aes_decrypts}]);
+        } else {
+            download(aes_decrypts[0].name, aes_decrypts[0].buffer.toString('base64'), true);
+        }
+    });
     $('.download-keys').click(function() {
         var filename = prompt("Please enter a desired filename to download the keys.", "keys.txt");
         if (filename != null) download(filename, "Name: " + $('#keys-name').val() + "\nEmail: " + $('#keys-email').val() + "\nPassphrase: " + $('#keys-passphrase').val() + "\n\nPrivate Key:\n\n" + $('#keys-private').val() + "\n\nPublic Key:\n\n" + $('#keys-public').val());
@@ -2112,6 +2537,19 @@
         $.each(groups, function(index, array) {
             $.each(array.data, function(index, value) {
                 zip.file(value.name + array.extension, value.text, {base64: array.is_base64});
+            });
+        });
+        zip.generateAsync({type: "blob"})
+        .then(function(content) {
+            saveAs(content, filename);
+        });
+    }
+    function downloadBulkBuffers(filename, groups) {
+        var zip = new JSZip();
+        $.each(groups, function(index, array) {
+            if (typeof array.extension === 'undefined') array.extension = "";
+            $.each(array.data, function(index, value) {
+                zip.file(value.name + array.extension, value.buffer);
             });
         });
         zip.generateAsync({type: "blob"})
