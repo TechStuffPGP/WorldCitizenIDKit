@@ -1,0 +1,111 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1033\deflangfe1033{\fonttbl{\f0\fswiss\fprq2\fcharset0 Calibri;}{\f1\fnil Consolas;}{\f2\fnil\fcharset0 Consolas;}{\f3\fnil\fcharset0 Calibri;}{\f4\fnil\fcharset2 Symbol;}}
+{\colortbl ;\red0\green0\blue255;\red5\green99\blue193;\red255\green255\blue255;\red0\green0\blue0;\red0\green77\blue187;\red163\green21\blue21;}
+{\*\generator Riched20 10.0.10586}{\*\mmathPr\mdispDef1\mwrapIndent1440 }\viewkind4\uc1 
+\pard\nowidctlpar\sa200\sl276\slmult1\b\f0\fs28\lang9 WorldCitizenIDKit Overview \fs22\par
+\b0 The purpose of this document is to review the code found at {{\field{\*\fldinst{HYPERLINK "https://github.com/HardBTC/WorldCitizenIDKit" }}{\fldrslt{\ul\cf1\cf2\ul WorldCitizenIDKit}}}}\f0\fs22  as of August 5th, 2016 and confirm that it behaves as described. This document is to give assurance to the reader that the private keys generated and/or handled by sign.html are done so in a responsible manner. No communication should occur apart from timestamping via the Bitcoin Blockchain.\par
+\b\fs28 Sign.html\par
+\b0\fs22 All of the code in this document resides in the sign.html file. This file is made up of two main parts and is structured as follows.\par
+
+\pard{\pntext\f4\'B7\tab}{\*\pn\pnlvlblt\pnf4\pnindent0{\pntxtb\'B7}}\nowidctlpar\fi-360\li720\sa200\sl276\slmult1\b UI\par
+
+\pard\nowidctlpar\li720\sa200\sl276\slmult1\b0 The UI is primarily made up of a standard CSS style sheet that originates from {{\field{\*\fldinst{HYPERLINK "http://getbootstrap.com" }}{\fldrslt{\ul\cf1\cf2\ul Bootstrap v3.3.6}}}}\f0\fs22  and the rest of this section is purely for user data input and interaction. \b\par
+
+\pard{\pntext\f4\'B7\tab}{\*\pn\pnlvlblt\pnf4\pnindent0{\pntxtb\'B7}}\nowidctlpar\fi-360\li720\sa200\sl276\slmult1 Scripts\par
+
+\pard\nowidctlpar\li720\sa200\sl276\slmult1\b0 The Scripts section of the file contains source code for a large number of javascript libraries listed below. These libraries each perform very specific functions and will be considered \ldblquote safe\rdblquote  and beyond the scope of this document. This leaves the PGP Signing script which is where the magic happens. The code in this script will be described below as to better understand the flow of information that occurs.\par
+
+\pard{\pntext\f4\'B7\tab}{\*\pn\pnlvlblt\pnf4\pnindent0{\pntxtb\'B7}}\nowidctlpar\fi-360\li1440\sa200\sl276\slmult1 {{\field{\*\fldinst{HYPERLINK https://code.jquery.com/jquery-3.1.0.min.js }}{\fldrslt{https://code.jquery.com/jquery-3.1.0.min.js\ul0\cf0}}}}\f0\fs22\par
+{\pntext\f4\'B7\tab}{{\field{\*\fldinst{HYPERLINK https://github.com/davidshimjs/qrcodejs/blob/master/qrcode.js }}{\fldrslt{https://github.com/davidshimjs/qrcodejs/blob/master/qrcode.js\ul0\cf0}}}}\f0\fs22\par
+{\pntext\f4\'B7\tab}{{\field{\*\fldinst{HYPERLINK https://github.com/keybase/kbpgp/blob/master/browser/kbpgp.js }}{\fldrslt{https://github.com/keybase/kbpgp/blob/master/browser/kbpgp.js\ul0\cf0}}}}\f0\fs22\par
+{\pntext\f4\'B7\tab}{{\field{\*\fldinst{HYPERLINK https://github.com/bitwiseshiftleft/sjcl }}{\fldrslt{https://github.com/bitwiseshiftleft/sjcl\ul0\cf0}}}}\f0\fs22\par
+{\pntext\f4\'B7\tab}{{\field{\*\fldinst{HYPERLINK http://bitcoinjs.org/ }}{\fldrslt{http://bitcoinjs.org/\ul0\cf0}}}}\f0\fs22\par
+{\pntext\f4\'B7\tab}{{\field{\*\fldinst{HYPERLINK https://code.google.com/archive/p/crypto-js/ }}{\fldrslt{https://code.google.com/archive/p/crypto-js/\ul0\cf0}}}}\f0\fs22\par
+{\pntext\f4\'B7\tab}{\highlight3\f1\fs19{\field{\*\fldinst{HYPERLINK http://stuartk.com/jszip }}{\fldrslt{http://stuartk.com/jszip\ul0\cf0}}}}\f0\fs22\par
+{\pntext\f4\'B7\tab}{{\field{\*\fldinst{HYPERLINK https://github.com/eligrey/FileSaver.js/ }}{\fldrslt{https://github.com/eligrey/FileSaver.js/\ul0\cf0}}}}\f0\fs22\par
+{\pntext\f4\'B7\tab}{{\field{\*\fldinst{HYPERLINK https://github.com/travist/jsencrypt }}{\fldrslt{https://github.com/travist/jsencrypt\ul0\cf0}}}}\f0\fs22\par
+{\pntext\f4\'B7\tab}{{\field{\*\fldinst{HYPERLINK http://www-cs-students.stanford.edu/~tjw/jsbn/ }}{\fldrslt{http://www-cs-students.stanford.edu/~tjw/jsbn/\ul0\cf0}}}}\f0\fs22\par
+
+\pard\nowidctlpar\sa200\sl276\slmult1\par
+\b\fs28 General Methods\par
+
+\pard\nowidctlpar\li720\sa200\sl276\slmult1\highlight3\f1\fs19 $("#pgp-method").change(\f2\lang1033 ) \cf4\b0\par
+\tab Selects signing/encryption method.\par
+\cf0\b\f1 $('#file-choose').click(\f2 ), \f1 $('#file-input').change(\f2 ), \f1 readFile(index, callback, as_binary_string)\f2  \b0\par
+\cf4\tab All have a role in getting the file data.\par
+\par
+
+\pard\nowidctlpar\sa200\sl276\slmult1\cf0\highlight0\b\f0\fs28\lang9 Signing and Encryption Methods\highlight3\b0\f2\fs19\lang1033\par
+
+\pard\nowidctlpar\li720\sa200\sl276\slmult1\b\f1 $('#pgp-sign-form')\f2 .submit(), \f1 pgpSign(key)\f2 , \f1 $("#pgp-sign-select").change\f2 ()\par
+
+\pard\nowidctlpar\li1440\sa200\sl276\slmult1\cf4\b0 Calls are made to the \cf5\b kbpgp \cf4\b0 library to use the user supplied PGP private key and sign the file data.\par
+
+\pard\nowidctlpar\li720\sa200\sl276\slmult1\cf0\b\f1 $('#pgp-enc-form').submit(\f2 ), \f1 pgpEnc(key)\f2 , \f1 $("#pgp-enc-select").change(\f2 )\par
+
+\pard\nowidctlpar\li1440\sa200\sl276\slmult1\cf4\b0 Calls are made to the \cf5\b kbpgp \cf4\b0 library to use the user supplied PGP private key and encrypt the file data.\par
+
+\pard\nowidctlpar\li720\sa200\sl276\slmult1\cf0\b\f1 $('#rsa-sign-form').submit(\f2 ), \f1 $("#rsa-sign-\f2 s\f1 elect").change(\f2 )\par
+
+\pard\nowidctlpar\li1440\sa200\sl276\slmult1\cf4\b0 Calls are made to \cf5\b jsbn \cf4\b0 library to use the user supplied RSA private key to sign the file data.\par
+
+\pard\nowidctlpar\li720\sa200\sl276\slmult1\cf0\b\f1 $('#rsa-enc-form').submit(\f2 ),  \f1 $("#rsa-enc-select").change(\f2 )\par
+
+\pard\nowidctlpar\li1440\sa200\sl276\slmult1\cf4\b0 Calls are made to \cf5\b JSEncrypt \cf4\b0 and \cf5\b CryptoJS \cf4\b0 libraries to use the user supplied RSA key to encrypt the file data.\par
+
+\pard\nowidctlpar\li720\sa200\sl276\slmult1\cf0\b\f1 $('#bitcoin-sign-form').submit(\f2 ), \f1 $("#bitcoin-sign-select").change\f2 ()\par
+
+\pard\nowidctlpar\li1440\sa200\sl276\slmult1\cf4\b0 Calls are made to the \cf5\b BitcoinJS \cf4\b0 library to use the user supplied WIF private key to sign the file data.\par
+
+\pard\nowidctlpar\li720\sa200\sl276\slmult1\cf0\b\f1 $('#aes-enc-form').submit(\f2 ), \f1 $("#aes-enc-select").change(\f2 ), \f1 $('input[name="aes-enc-key-source"]').change(\f2 ), \f1 $('input[name="aes-enc-mode"]').change(\f2 )\b0\par
+
+\pard\nowidctlpar\li1440\sa200\sl276\slmult1\cf4 Calls are made to the \cf5\b CryptoJS \cf4\b0 library to use the user supplied passphrase to encrypt the file data.\par
+
+\pard\nowidctlpar\li720\sa200\sl276\slmult1\par
+
+\pard\nowidctlpar\sa200\sl276\slmult1\cf0\highlight0\b\f0\fs28\lang9 Timestamp Methods\par
+\tab\highlight3\f1\fs19 $('#timestamp-form').submit(\f2\lang1033 )\b0\par
+
+\pard\nowidctlpar\li1440\sa200\sl276\slmult1 Selects which signature is to be used. Calls are made to the \cf5 sjcl \cf0 library to convert the selected signature to base64.\par
+
+\pard\nowidctlpar\sa200\sl276\slmult1\tab\cf4\b\f1 timestampFile()\f2 , \f1 timestampOther(data, method)\par
+
+\pard\nowidctlpar\li1440\sa200\sl276\slmult1\b0\f2 Calls are made to the \cf5\b sjcl \cf4\b0 library to do convertions and both ultimately call on generateAddress().\par
+
+\pard\nowidctlpar\sa200\sl276\slmult1\tab\b\f1 generateAddress()\f2 , \f1 checkTimestamp()\b0\par
+
+\pard\nowidctlpar\li1440\sa200\sl276\slmult1\f2 Generates a new bitcoin address using the \cf5\b BitcoinJS \cf4\b0 library for the user to send bitcoin to. Makes calls to {\cf0\f1{\field{\*\fldinst{HYPERLINK https://api.blockcypher.com }}{\fldrslt{https://api.blockcypher.com\ul0\cf0}}}}\cf0\f2\fs19  to verify if the address has recieved enough bitcoin. Once the quantity has been verified the \cf5\b BitcoinJS \cf0\b0 library is used to sign a transaction to send the received bitcoin to \cf6\f1 19GLvv56bw3AP7TN2MDpbDHNSwSALTqhFd\cf0\f2 , sign.html's donation address.\cf4\par
+
+\pard\nowidctlpar\sa200\sl276\slmult1\cf0\highlight0\b\f0\fs28\lang9 PGP/RSA Generation Methods\par
+\b0\fs22\tab\highlight3\b\f1\fs19 $('#keys-form').submit(\f2\lang1033 ), \f1 $('#keys-rsa-form').submit(\f2 )\b0\par
+
+\pard\nowidctlpar\li1440\sa200\sl276\slmult1 Calls are made to the \cf5 kbpgp \cf0 and \cf5 JSEncrypt \cf0 libraries, respectively.These libraries are used to generate new key pairs which are then set to be used in signing and encrypting.\par
+
+\pard\nowidctlpar\sa200\sl276\slmult1\highlight0\b\f0\fs28\lang9 Download Method\highlight3\b0\f2\fs19\lang1033\par
+\cf4\tab\b\f1 download(\f2 ), \f1 ownloadBulk(\f2 )\b0\par
+
+\pard\nowidctlpar\li1440\sa200\sl276\slmult1 Gathers any generated encrypted data or signatures and calls on the \cf5 JZip\cf4  library to create .zip files for the user to download.\par
+
+\pard\nowidctlpar\sa200\sl276\slmult1\cf0\highlight0\b\f0\fs28\lang9 Final Opinion\par
+\b0\fs22 The only information sent by the code appears to be to Bitcoin Blockchain by way of {\highlight3\f3\lang1033{\field{\*\fldinst{HYPERLINK https://api.blockcypher.com }}{\fldrslt{https://api.blockcypher.com\ul0\cf0}}}}\f3\fs22 . This information is that regarding the proof of existence of signatures or encrypted data. As long as the user trusts BlockCypher and is sure their network communcations to the site are secure then the resulting timestamp and proof of existence can be trusted. If network communications were to be compromised, the results could not be trusted but no sensitive information should be leaked. Furthermore a user could check the validity of the returned information with the Blockchain. No other data seems to be sent or stored and the code behaves \f0 as described. Therefore, to the best of my knowledge the code found at {{\field{\*\fldinst{HYPERLINK "https://github.com/HardBTC/WorldCitizenIDKit" }}{\fldrslt{\ul\cf1\cf2\ul WorldCitizenIDKit}}}}\f0\fs22  as of August 5th, 2016 poses no direct threat to user security.\par
+\par
+\par
+\par
+\par
+\par
+\par
+\par
+\par
+\par
+\par
+\par
+\par
+\par
+\par
+\par
+\par
+\par
+\par
+Disclaimer \endash  This document does not guarantee anything regarding the security of the aforementioned files.\par
+Contact \endash  {{\field{\*\fldinst{HYPERLINK "mailto:Jakeinvents@gmail.com" }}{\fldrslt{\ul\cf1\cf2\ul Jakeinvents@gmail.com}}}}\f0\fs22  , Apricity Labs LLC.\par
+}
+ 

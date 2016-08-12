@@ -18,7 +18,7 @@ You will need a private PGP key in order to use this tool. If you don't already 
 
 Building on from the [ID Card Project](http://citizen.cards/), this demo was designed as a learning tool to help people understand how these kinds of cryptographic tools can work locally and in a way that is easy to inspect and learn from.  
 
-The code is designed to run in the world’s most popular application, the web browser, and it’s designed to run on the user’s personal computer where they have control.  
+The code is designed to run in the world's most popular application, the web browser, and it's designed to run on the user's personal computer where they have control.  
 
 There are larger projects that have longer term goals for scaling.
 
@@ -34,7 +34,7 @@ This is not a complete list. Also, the features overlap and approaches are often
 
 ## Code Reviews
 
-Apricity Labs, LLC. - [PASSED](https://github.com/HardBTC/WorldCitizenIDKit/blob/master/Code%20Review/WorldCitizenIDKit-master-Security-Review-One.rtf)
+Apricity Labs, LLC. - [PASSED](https://github.com/HardBTC/WorldCitizenIDKit/blob/master/Code%20Review/WorldCitizenIDKit-master-Security-Review-Two.rtf)
 
 ## License
 
