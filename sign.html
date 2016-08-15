@@ -311,24 +311,24 @@
             <div class="form-group">
               <label for="vd-method">Method</label>
               <select class="form-control" id="vd-method">
-                <!--<option value="pgp-verify">PGP Verification</option>-->
+                <option value="pgp-verify">PGP Verification</option>
                 <option value="pgp-dec">PGP Decryption</option>
-                <!--<option value="rsa-verify">RSA Verification</option>-->
+                <option value="rsa-verify">RSA Verification</option>
                 <option value="rsa-dec">RSA Decryption</option>
-                <!--<option value="bitcoin-verify">Bitcoin Verification</option>-->
+                <option value="bitcoin-verify">Bitcoin Verification</option>
                 <option value="aes-dec">AES Decryption</option>
               </select>
             </div>
             
             <!-- PGP Verification -->
-            <form id="pgp-verify-form" class="hidden">
+            <form id="pgp-verify-form">
               <div class="form-group">
                 <label for="pgp-verify-public-key">Public Key</label>
                 <textarea class="form-control" id="pgp-verify-public-key" rows="10" placeholder="Paste the signer's public key here..."></textarea>
               </div>
               <div class="form-group">
-                <button type="submit" id="pgp-verify-go" class="btn btn-default">Verify Signature<span class="show-multi-file">s</span></button>
-                <button type="button" class="btn btn-default download-pgp-verified" disabled>Download Original File<span class="show-multi-file">s</span></button>
+                <button type="submit" id="pgp-verify-go" class="btn btn-default">Verify Signature(s)</button>
+                <button type="button" class="btn btn-default download-pgp-verified" disabled>Download Original File(s)</button>
               </div>
               <div>
                 <label for="pgp-verify-results">Results</label>
@@ -337,7 +337,7 @@
             </form>
             
             <!-- PGP Decryption -->
-            <form id="pgp-dec-form">
+            <form id="pgp-dec-form" class="hidden">
               <div class="form-group">
                 <label for="pgp-dec-private-key">Private Key</label>
                 <textarea class="form-control" id="pgp-dec-private-key" rows="10" placeholder="Paste your private key here..."></textarea>
@@ -354,8 +354,8 @@
                 </div>
               </div>
               <div class="form-group">
-                <button type="submit" id="pgp-dec-go" class="btn btn-default">Decrypt File<span class="show-multi-file">s</span></button>
-                <button type="button" class="btn btn-default download-pgp-decrypted" disabled>Download Decrypted File<span class="show-multi-file">s</span></button>
+                <button type="submit" id="pgp-dec-go" class="btn btn-default">Decrypt File(s)</button>
+                <button type="button" class="btn btn-default download-pgp-decrypted" disabled>Download Decrypted File(s)</button>
               </div>
               <div>
                 <label for="pgp-dec-results">Results</label>
@@ -370,17 +370,7 @@
                 <textarea class="form-control" id="rsa-verify-public-key" rows="10" placeholder="Paste the signer's public key here..."></textarea>
               </div>
               <div class="form-group">
-                <label>Hash Algorithm</label>
-                <select class="form-control" id="rsa-verify-hash-algorithm">
-                  <option value="sha1">SHA1</option>
-                  <option value="sha256" selected>SHA256</option>
-                  <option value="sha512">SHA512</option>
-                  <option value="md5">MD5</option>
-                  <option value="ripemd160">RIPEMD-160</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <button type="submit" id="rsa-verify-go" class="btn btn-default">Verify Signature<span class="show-multi-file">s</span></button>
+                <button type="submit" id="rsa-verify-go" class="btn btn-default">Verify Signature(s)</button>
                 <button type="button" class="btn btn-default download-rsa-verified" disabled>Download Results</button>
               </div>
               <div>
@@ -396,8 +386,8 @@
                 <textarea class="form-control" id="rsa-dec-private-key" rows="10" placeholder="Paste your private key here..."></textarea>
               </div>
               <div class="form-group">
-                <button type="submit" id="rsa-dec-go" class="btn btn-default">Decrypt File<span class="show-multi-file">s</span></button>
-                <button type="button" class="btn btn-default download-rsa-decrypted" disabled>Download Decrypted File<span class="show-multi-file">s</span></button>
+                <button type="submit" id="rsa-dec-go" class="btn btn-default">Decrypt File(s)</button>
+                <button type="button" class="btn btn-default download-rsa-decrypted" disabled>Download Decrypted File(s)</button>
               </div>
               <div>
                 <label for="rsa-dec-results">Results</label>
@@ -408,11 +398,12 @@
             <!-- Bitcoin Verification -->
             <form id="bitcoin-verify-form" class="hidden">
               <div class="form-group">
-                <label for="bitcoin-verify-address">Bitcoin Address</label>
-                <input type="text" class="form-control" id="bitcoin-verify-address" placeholder="Paste the signer's Bitcoin address here...">
+                <label for="bitcoin-verify-extension">Signature File Extension</label>
+                <input type="text" class="form-control" id="bitcoin-verify-extension" placeholder="e.g. sig" value="sig">
+                <p class="help-block">All files ending in this extension will be interpreted as signatures, whereas all other files will be interpreted as originals. Every signature should have a corresponding original file.</p>
               </div>
               <div class="form-group">
-                <button type="submit" id="bitcoin-verify-go" class="btn btn-default">Verify Signature<span class="show-multi-file">s</span></button>
+                <button type="submit" id="bitcoin-verify-go" class="btn btn-default disabled-single-file">Verify Signature(s)</button>
                 <button type="button" class="btn btn-default download-bitcoin-verified" disabled>Download Results</button>
               </div>
               <div>
@@ -453,8 +444,8 @@
                 <input type="password" class="form-control" id="aes-dec-iv">
               </div>
               <div class="form-group">
-                <button type="submit" id="aes-dec-go" class="btn btn-default">Decrypt File<span class="show-multi-file">s</span></button>
-                <button type="button" class="btn btn-default download-aes-decrypted" disabled>Download Decrypted File<span class="show-multi-file">s</span></button>
+                <button type="submit" id="aes-dec-go" class="btn btn-default">Decrypt File(s)</button>
+                <button type="button" class="btn btn-default download-aes-decrypted" disabled>Download Decrypted File(s)</button>
               </div>
               <div>
                 <label for="aes-dec-results">Results</label>
@@ -1261,7 +1252,7 @@
     // WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
     // ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
     // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-    function(t){"use strict";var e,i={};i.decode=function(i){var r;if(e===t){var s="0123456789ABCDEF",n=" \f\n\r	 \u2028\u2029";for(e=[],r=0;16>r;++r)e[s.charAt(r)]=r;for(s=s.toLowerCase(),r=10;16>r;++r)e[s.charAt(r)]=r;for(r=0;r<n.length;++r)e[n.charAt(r)]=-1}var o=[],h=0,a=0;for(r=0;r<i.length;++r){var u=i.charAt(r);if("="==u)break;if(u=e[u],-1!=u){if(u===t)throw"Illegal character at offset "+r;h|=u,++a>=2?(o[o.length]=h,h=0,a=0):h<<=4}}if(a)throw"Hex encoding incomplete: 4 bits missing";return o},window.Hex=i}(),
+    function(t){"use strict";var e,i={};i.decode=function(i){var r;if(e===t){var s="0123456789ABCDEF",n=" \f\n\r	 \u2028\u2029";for(e=[],r=0;16>r;++r)e[s.charAt(r)]=r;for(s=s.toLowerCase(),r=10;16>r;++r)e[s.charAt(r)]=r;for(r=0;r<n.length;++r)e[n.charAt(r)]=-1}var o=[],h=0,a=0;for(r=0;r<i.length;++r){var u=i.charAt(r);if("="==u)break;if(u=e[u],-1!=u){if(u===t)throw"Illegal character at offset "+r;h|=u,++a>=2?(o[o.length]=h,h=0,a=0):h<<=4}}if(a)throw"Hex encoding incomplete: 4 bits missing";return o},window.Hex=i}(),
     // Copyright (c) 2008-2013 Lapo Luchini <lapo@lapo.it>
     // copyright notice and this permission notice appear in all copies.
     // 
@@ -1272,7 +1263,7 @@
     // WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
     // ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
     // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-    function(t){"use strict";var e,i={};i.decode=function(i){var r;if(e===t){var s="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",n="= \f\n\r	 \u2028\u2029";for(e=[],r=0;64>r;++r)e[s.charAt(r)]=r;for(r=0;r<n.length;++r)e[n.charAt(r)]=-1}var o=[],h=0,a=0;for(r=0;r<i.length;++r){var u=i.charAt(r);if("="==u)break;if(u=e[u],-1!=u){if(u===t)throw"Illegal character at offset "+r;h|=u,++a>=4?(o[o.length]=h>>16,o[o.length]=h>>8&255,o[o.length]=255&h,h=0,a=0):h<<=6}}switch(a){case 1:throw"Base64 encoding incomplete: at least 2 bits missing";case 2:o[o.length]=h>>10;break;case 3:o[o.length]=h>>16,o[o.length]=h>>8&255}return o},i.re=/-----BEGIN [^-]+-----([A-Za-z0-9+\/=\s]+)-----END [^-]+-----|begin-base64[^\n]+\n([A-Za-z0-9+\/=\s]+)====/,i.unarmor=function(t){var e=i.re.exec(t);if(e)if(e[1])t=e[1];else{if(!e[2])throw"RegExp out of sync";t=e[2]}return i.decode(t)},window.Base64=i}(),
+    function(t){"use strict";var e,i={};i.decode=function(i){var r;if(e===t){var s="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",n="= \f\n\r	 \u2028\u2029";for(e=[],r=0;64>r;++r)e[s.charAt(r)]=r;for(r=0;r<n.length;++r)e[n.charAt(r)]=-1}var o=[],h=0,a=0;for(r=0;r<i.length;++r){var u=i.charAt(r);if("="==u)break;if(u=e[u],-1!=u){if(u===t)throw"Illegal character at offset "+r;h|=u,++a>=4?(o[o.length]=h>>16,o[o.length]=h>>8&255,o[o.length]=255&h,h=0,a=0):h<<=6}}switch(a){case 1:throw"Base64 encoding incomplete: at least 2 bits missing";case 2:o[o.length]=h>>10;break;case 3:o[o.length]=h>>16,o[o.length]=h>>8&255}return o},i.re=/-----BEGIN [^-]+-----([A-Za-z0-9+\/=\s]+)-----END [^-]+-----|begin-base64[^\n]+\n([A-Za-z0-9+\/=\s]+)====/,i.unarmor=function(t){var e=i.re.exec(t);if(e)if(e[1])t=e[1];else{if(!e[2])throw"RegExp out of sync";t=e[2]}return i.decode(t)},window.Base64=i}(),
     // Copyright (c) 2008-2013 Lapo Luchini <lapo@lapo.it>
     // copyright notice and this permission notice appear in all copies.
     // 
@@ -2333,6 +2324,80 @@
                 break;
         }
     });
+    /* PGP Verification */
+    var pgp_verified = [];
+    $('#pgp-verify-form').submit(function(e) {
+        // Stop submit event
+        e.preventDefault();
+        
+        // Setup controls
+        $('#pgp-verify-go').prop('disabled', true);
+        $('#pgp-verify-go').text("Loading...");
+        
+        // Clear past data
+        $('#pgp-verify-results').val("");
+        pgp_verified = [];
+        
+        // Get public key
+        var public_key = $('#pgp-verify-public-key').val();
+        kbpgp.KeyManager.import_from_armored_pgp({
+            armored: public_key
+        }, function(err, key) {
+            if (!err) {
+                pgpVerify(key);
+            } else {
+                alert("Failed to load this public key.");
+                // Setup controls
+                $('#pgp-verify-go').prop('disabled', false);
+                $('#pgp-verify-go').text("Verify File");
+            }
+        });
+    });
+    function pgpVerify(key, armored) {
+        var file_count = document.getElementById('file-input').files.length;
+        var doNext = function(index) {
+            readFile(index, function(index, file, result) {
+                // Decrypt the Buffer
+                var ring = new kbpgp.keyring.KeyRing;
+                ring.add_key_manager(key);
+                
+                var params = {
+                    raw: armored ? undefined : new kbpgp.Buffer(result, 'base64'),
+                    armored: armored ? atob(result) : undefined,
+                    keyfetch: ring
+                };
+                
+                kbpgp.unbox(params, function(err, literals) {
+                    if (!err) {
+                        var original_name = file.name;
+                        if (armored) {
+                            if (file.name.substring(file.name.length - 4, file.name.length) == ".asc") original_name = file.name.substring(0, file.name.length - 4);
+                        } else {
+                            if (file.name.substring(file.name.length - 4, file.name.length) == ".sig") original_name = file.name.substring(0, file.name.length - 4);
+                        }
+                        pgp_verified[index] = {name: original_name, buffer: literals[0].toBuffer()};
+                        $('#pgp-verify-results').val($('#pgp-verify-results').val() + "File #" + (index + 1) + " (" + file.name + "): Successfully verified\n");
+                        if (pgp_verified[index].buffer.length == 32) $('#pgp-verify-results').val($('#pgp-verify-results').val() + "File #" + (index + 1) + " (" + file.name + "): Potential SHA256 hash: " + pgp_verified[index].buffer.toString('hex') + "\n");
+                        if (pgp_verified[index].buffer.length == 16) $('#pgp-verify-results').val($('#pgp-verify-results').val() + "File #" + (index + 1) + " (" + file.name + "): Potential MD5 hash: " + pgp_verified[index].buffer.toString('hex') + "\n");
+                    } else {
+                        $('#pgp-verify-results').val($('#pgp-verify-results').val() + "File #" + (index + 1) + " (" + file.name + "): Failed to verify; check console\n");
+                        console.log("File #" + (index + 1) + " (" + file.name + "): Failed to verify: " + err);
+                    }
+                    
+                    if (index + 1 < file_count) {
+                        doNext(index + 1);
+                        return;
+                    }
+                    
+                    // Setup controls
+                    $('.download-pgp-verified').prop('disabled', false);
+                    $('#pgp-verify-go').prop('disabled', false);
+                    $('#pgp-verify-go').text("Verify File(s)");
+                });
+            });
+        };
+        doNext(0);
+    }
     /* PGP Decryption */
     var pgp_decrypts = [];
     $('#pgp-dec-form').submit(function(e) {
@@ -2364,7 +2429,7 @@
                             alert("This private key could not been decrypted. Please check your passphrase.");
                             // Setup controls
                             $('#pgp-dec-go').prop('disabled', false);
-                            $('#pgp-dec-go').text("Decrypt File");
+                            $('#pgp-dec-go').text("Decrypt File(s)");
                         }
                     });
                 } else {
@@ -2374,7 +2439,7 @@
                 alert("Failed to load this private key.");
                 // Setup controls
                 $('#pgp-dec-go').prop('disabled', false);
-                $('#pgp-dec-go').text("Decrypt File");
+                $('#pgp-dec-go').text("Decrypt File(s)");
             }
         });
     });
@@ -2402,6 +2467,8 @@
                         }
                         pgp_decrypts[index] = {name: original_name, buffer: literals[0].toBuffer()};
                         $('#pgp-dec-results').val($('#pgp-dec-results').val() + "File #" + (index + 1) + " (" + file.name + "): Successfully decrypted\n");
+                        if (pgp_decrypts[index].buffer.length == 32) $('#pgp-dec-results').val($('#pgp-dec-results').val() + "File #" + (index + 1) + " (" + file.name + "): Potential SHA256 hash: " + pgp_decrypts[index].buffer.toString('hex') + "\n");
+                        if (pgp_decrypts[index].buffer.length == 16) $('#pgp-dec-results').val($('#pgp-dec-results').val() + "File #" + (index + 1) + " (" + file.name + "): Potential MD5 hash: " + pgp_decrypts[index].buffer.toString('hex') + "\n");
                     } else {
                         $('#pgp-dec-results').val($('#pgp-dec-results').val() + "File #" + (index + 1) + " (" + file.name + "): Failed to decrypt; check console\n");
                         console.log("File #" + (index + 1) + " (" + file.name + "): Failed to decrypt: " + err);
@@ -2409,13 +2476,66 @@
                     
                     if (index + 1 < file_count) {
                         doNext(index + 1);
+                        return;
                     }
                     
                     // Setup controls
                     $('.download-pgp-decrypted').prop('disabled', false);
                     $('#pgp-dec-go').prop('disabled', false);
-                    $('#pgp-dec-go').text("Decrypt Files");
+                    $('#pgp-dec-go').text("Decrypt File(s)");
                 });
+            });
+        };
+        doNext(0);
+    }
+    /* RSA Verification */
+    $('#rsa-verify-form').submit(function(e) {
+        // Stop submit event
+        e.preventDefault();
+        
+        // Setup controls
+        $('#rsa-verify-go').prop('disabled', true);
+        $('#rsa-verify-go').text("Loading...");
+        
+        // Clear past data
+        $('#rsa-verify-results').val("");
+        
+        // Get public key and verify
+        var public_key = KEYUTIL.getKey($('#rsa-verify-public-key').val());
+        rsaVerify(public_key);
+    });
+    function getRsaSignatureInfo(pubKey, hSig) {
+        hSig = hSig.replace(_RE_HEXDECONLY, '');
+        hSig = hSig.replace(/[ \n]+/g, "");
+        var biSig = parseBigInt(hSig, 16);
+        if (biSig.bitLength() > pubKey.n.bitLength()) return false;
+        var biDecryptedSig = pubKey.doPublic(biSig);
+        var hDigestInfo = biDecryptedSig.toString(16).replace(/^1f+00/, '');
+        var digestInfoAry = _rsasign_getAlgNameAndHashFromHexDisgestInfo(hDigestInfo);
+        return digestInfoAry;
+    }
+    function rsaVerify(key) {
+        var file_count = document.getElementById('file-input').files.length;
+        var doNext = function(index) {
+            readFile(index, function(index, file, result) {
+                // Verify the Buffer
+                var info = getRsaSignatureInfo(key, new kbpgp.Buffer(result, 'base64').toString('hex'));
+                if (info) {
+                    $('#rsa-verify-results').val($('#rsa-verify-results').val() + "File #" + (index + 1) + " (" + file.name + "): Successfully verified; found hash of type \"" + info[0] + "\": " + info[1] + "\n");
+                } else {
+                    $('#rsa-verify-results').val($('#rsa-verify-results').val() + "File #" + (index + 1) + " (" + file.name + "): Failed to verify; check console\n");
+                    console.log("File #" + (index + 1) + " (" + file.name + "): Failed to verify");
+                }
+                
+                if (index + 1 < file_count) {
+                    doNext(index + 1);
+                    return;
+                }
+                
+                // Setup controls
+                $('.download-rsa-verified').prop('disabled', false);
+                $('#rsa-verify-go').prop('disabled', false);
+                $('#rsa-verify-go').text("Verify File(s)");
             });
         };
         doNext(0);
@@ -2453,6 +2573,7 @@
                         rsa_decrypts[index] = {name: file.name.substring(file.name.length - 4, file.name.length) == ".enc" ? file.name.substring(0, file.name.length - 4) : file.name, buffer: new buffer.Buffer(btoa(decrypted), 'base64')};
                         $('#rsa-dec-results').val($('#rsa-dec-results').val() + "File #" + (index + 1) + " (" + file.name + "): Successfully decrypted\n");
                         if (rsa_decrypts[index].buffer.length == 32) $('#rsa-dec-results').val($('#rsa-dec-results').val() + "File #" + (index + 1) + " (" + file.name + "): Potential SHA256 hash: " + rsa_decrypts[index].buffer.toString('hex') + "\n");
+                        if (rsa_decrypts[index].buffer.length == 16) $('#rsa-dec-results').val($('#rsa-dec-results').val() + "File #" + (index + 1) + " (" + file.name + "): Potential MD5 hash: " + rsa_decrypts[index].buffer.toString('hex') + "\n");
                     } else {
                         $('#rsa-dec-results').val($('#rsa-dec-results').val() + "File #" + (index + 1) + " (" + file.name + "): Failed to decrypt\n");
                     }
@@ -2463,13 +2584,122 @@
                 
                 if (index + 1 < file_count) {
                     doNext(index + 1);
+                    return;
                 }
                 
                 // Setup controls
                 $('.download-rsa-decrypted').prop('disabled', false);
                 $('#rsa-dec-go').prop('disabled', false);
-                $('#rsa-dec-go').text("Decrypt Files");
+                $('#rsa-dec-go').text("Decrypt File(s)");
             });
+        };
+        doNext(0);
+    }
+    /* Bitcoin Verification */
+    $('#bitcoin-verify-form').submit(function(e) {
+        // Stop submit event
+        e.preventDefault();
+        
+        // Setup controls
+        $('#bitcoin-verify-go').prop('disabled', true);
+        $('#bitcoin-verify-go').text("Loading...");
+        
+        // Clear past data
+        $('#bitcoin-verify-results').val("");
+        
+        // Verify
+        bitcoinVerify();
+    });
+    function bitcoinVerifyWithHash(signature, message_hash) {
+        if (!bitcoin.Buffer.Buffer.isBuffer(signature)) {
+            signature = new bitcoin.Buffer.Buffer(signature, 'base64');
+        }
+
+        var parsed = bitcoin.ECSignature.parseCompact(signature);
+        var e = bitcoin.BigInteger.fromBuffer(message_hash);
+        var Q = bitcoin.ecdsa.recoverPubKey(e, parsed.signature, parsed.i);
+
+        var keyPair = new bitcoin.ECPair(null, Q, {
+            compressed: parsed.compressed,
+            network: bitcoin.networks.bitcoin
+        });
+
+        return keyPair.getAddress();
+    }
+    function bitcoinVerify() {
+        // Get extension
+        var extension = $('#bitcoin-verify-extension').val();
+        
+        // Get network message prefix
+        var messagePrefix = new buffer.Buffer(bitcoin.networks.bitcoin.messagePrefix);
+        
+        // Get total file count, source, also size of all files to be hashed
+        var files = document.getElementById('file-input').files;
+        var indexes = [];
+        var bytes_so_far = 0;
+        var total_bytes = 0;
+        for (var i = 0; i < files.length; i++) {
+            var si = -1;
+            for (var j = 0; j < files.length; j++) {
+                if (files[j].name == files[i].name + "." + extension) {
+                    si = j;
+                    break;
+                }
+            }
+            if (si >= 0) {
+                indexes.push([i, si]);
+                total_bytes += files[i].size;
+            }
+        }
+        
+        if (indexes.length == 0) {
+            alert("Failed to find any files with corresponding signatures.");
+            // Setup controls
+            $('.download-bitcoin-verified').prop('disabled', false);
+            $('#bitcoin-verify-go').prop('disabled', false);
+            $('#bitcoin-verify-go').text("Verify File(s)");
+        }
+
+        var doNext = function(i) {
+            var index = indexes[i][0];
+            var sig_index = indexes[i][1];
+            var lengthBuffer = bitcoin.bufferutils.varIntBuffer(files[index].size);
+            hashFile(index, "sha256", function(index, file, bytes, hash) {
+                bytes_so_far += bytes;
+                showProgress(bytes_so_far / total_bytes, "Successfully processed " + formatBytes(bytes_so_far) + " of " + formatBytes(total_bytes) + " among " + indexes.length + " total file(s).");
+                if (typeof hash !== "undefined") {
+                    hash = bitcoin.crypto.sha256(new buffer.Buffer(hash, "hex"));
+                    console.log("Generated magic hash from file #" + (index + 1) + " during Bitcoin verification: " + hash.toString("hex"));
+
+                    // Read the signature
+                    readFile(sig_index, function(sig_index, file, result) {
+                        // Verify the Buffer
+                        try {
+                            var address = bitcoinVerifyWithHash(result, hash);
+                            if (address) {
+                                $('#bitcoin-verify-results').val($('#bitcoin-verify-results').val() + "File #" + (index + 1) + " (" + file.name + "): Successfully verified; signed by address: " + address + "\n");
+                            } else {
+                                $('#bitcoin-verify-results').val($('#bitcoin-verify-results').val() + "File #" + (index + 1) + " (" + file.name + "): Failed to verify\n");
+                            }
+                        } catch (error) {
+                            $('#bitcoin-verify-results').val($('#bitcoin-verify-results').val() + "File #" + (index + 1) + " (" + file.name + "): Failed to verify; check console\n");
+                            console.log("File #" + (index + 1) + " (" + file.name + "): Failed to verify: " + error);
+                        }
+                        
+                        if (i + 1 < indexes.length) {
+                            doNext(i + 1);
+                            return;
+                        }
+                        
+                        // Setup controls
+                        $('.download-bitcoin-verified').prop('disabled', false);
+                        $('#bitcoin-verify-go').prop('disabled', false);
+                        $('#bitcoin-verify-go').text("Verify File(s)");
+                        // Hide progress
+                        hideProgress();
+                    });
+                }
+            }, buffer.Buffer.concat([messagePrefix, lengthBuffer]));
         };
         doNext(0);
     }
@@ -2515,7 +2745,7 @@
             alert(error);
             // Setup controls
             $('#aes-dec-go').prop('disabled', false);
-            $('#aes-dec-go').text("Decrypt File");
+            $('#aes-dec-go').text("Decrypt File(s)");
         }
         
         // Begin decryption
@@ -2529,6 +2759,8 @@
                     var decrypted = CryptoJS.AES.decrypt(btoa(result), key, params).toString(CryptoJS.enc.Utf8);                    
                     aes_decrypts[index] = {name: file.name.substring(file.name.length - 4, file.name.length) == ".enc" ? file.name.substring(0, file.name.length - 4) : file.name, buffer: new buffer.Buffer(btoa(decrypted), 'base64')};
                     $('#aes-dec-results').val($('#aes-dec-results').val() + "File #" + (index + 1) + " (" + file.name + "): Successfully decrypted\n");
+                    if (aes_decrypts[index].buffer.length == 32) $('#aes-dec-results').val($('#aes-dec-results').val() + "File #" + (index + 1) + " (" + file.name + "): Potential SHA256 hash: " + aes_decrypts[index].buffer.toString('hex') + "\n");
+                    if (aes_decrypts[index].buffer.length == 16) $('#aes-dec-results').val($('#aes-dec-results').val() + "File #" + (index + 1) + " (" + file.name + "): Potential MD5 hash: " + aes_decrypts[index].buffer.toString('hex') + "\n");
                 } catch (error) {
                     $('#aes-dec-results').val($('#aes-dec-results').val() + "File #" + (index + 1) + " (" + file.name + "): Failed to decrypt; check console\n");
                     console.log("File #" + (index + 1) + " (" + file.name + "): Failed to decrypt: " + error);
@@ -2536,12 +2768,13 @@
                 
                 if (index + 1 < file_count) {
                     doNext(index + 1);
+                    return;
                 }
                 
                 // Setup controls
                 $('.download-aes-decrypted').prop('disabled', false);
                 $('#aes-dec-go').prop('disabled', false);
-                $('#aes-dec-go').text("Decrypt Files");
+                $('#aes-dec-go').text("Decrypt File(s)");
             }, true);
         };
         doNext(0);
@@ -2846,6 +3079,13 @@
             download($('#file-name').text() + '.enc', $('#aes-enc-data').val(), true);
         }
     });
+    $('.download-pgp-verified').click(function() {
+        if (document.getElementById('file-input').files.length > 1) {
+            downloadBulkBuffers("pgp_verified.zip", [{data: pgp_verified}]);
+        } else {
+            download(pgp_verified[0].name, pgp_verified[0].buffer.toString('base64'), true);
+        }
+    });
     $('.download-pgp-decrypted').click(function() {
         if (document.getElementById('file-input').files.length > 1) {
             downloadBulkBuffers("pgp_decrypts.zip", [{data: pgp_decrypts}]);
@@ -2853,12 +3093,18 @@
             download(pgp_decrypts[0].name, pgp_decrypts[0].buffer.toString('base64'), true);
         }
     });
+    $('.download-rsa-verified').click(function() {
+        download("rsa_verified.txt", $('#rsa-verify-results').val());
+    });
     $('.download-rsa-decrypted').click(function() {
         if (document.getElementById('file-input').files.length > 1) {
             downloadBulkBuffers("rsa_decrypts.zip", [{data: rsa_decrypts}]);
         } else {
             download(rsa_decrypts[0].name, rsa_decrypts[0].buffer.toString('base64'), true);
         }
+    });
+    $('.download-bitcoin-verified').click(function() {
+        download("bitcoin_verified.txt", $('#bitcoin-verify-results').val());
     });
     $('.download-aes-decrypted').click(function() {
         if (document.getElementById('file-input').files.length > 1) {
