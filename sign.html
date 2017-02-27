@@ -288,6 +288,7 @@
               <div class="form-group">
                 <button type="submit" id="timestamp-generate" class="btn btn-default">Generate Timestamp</button>
                 <button type="button" class="btn btn-default download-timestamp" disabled>Download Timestamp Report</button>
+                <button type="button" data-toggle="modal" data-target="#email-report" class="btn btn-default email-timestamp" disabled>Email Timestamp Report</button>
               </div>
             </form>
             <div class="form-group">
@@ -686,6 +687,23 @@
               </div>
             </div>
             <p id="progress-text"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="email-report" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Email Report</h4>
+          </div>
+          <div class="modal-body">
+            <p>Please enter your email address below to send an email containing a report about your file and its Blockchain timestamp.</p>
+            <input type="email" class="form-control" id="email-report-address" placeholder="Recipient email address">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="email-report-send" data-dismiss="modal">Send</button>
           </div>
         </div>
       </div>
@@ -2897,7 +2915,7 @@
         txstamp = "";
         blockstamp = "";
         
-        $('.download-timestamp').prop('disabled', true);
+        $('.download-timestamp, .email-timestamp').prop('disabled', true);
         enableGenerateTimestamp();
     }
     $('#timestamp-check-button').click(function() {
@@ -2953,7 +2971,7 @@
                         txstamp = new Date(data.tx.received).toString();
                         blockstamp = "";
                         $('#timestamp-pay').html('<p>Payment has been received, and the timestamp transaction has been sent. The transaction (hash <strong>' + txid + '</strong>) was sent at <strong>' + txstamp + '</strong>. Check back in a few minutes if you would like to see the timestamp of the block containing the transaction. Also, keep in mind that if this timestamp was generated using a PGP signature or encrypted message, be sure to save the signature/message, because re-signing/re-encrypting the file will produce a different hash!</p>');
-                        $('.download-timestamp').prop('disabled', false);
+                        $('.download-timestamp, .email-timestamp').prop('disabled', false);
                     });
                 } else if (balance > 0) {
                     // Not enough
@@ -3121,7 +3139,7 @@
         var filename = prompt("Please enter a desired filename to download the keys.", "keys.txt");
         if (filename != null) download(filename, "Key Size: " + $('#keys-rsa-size').val() + " bits\n\nPrivate Key:\n\n" + $('#keys-rsa-private').val() + "\n\nPublic Key:\n\n" + $('#keys-rsa-public').val());
     });
-    $('.download-timestamp').click(function() {
+    function generateReport() {
         var source = "File";
         var suffix = "";
         if ($('#timestamp-hash').data('method') == "pgp") {
@@ -3144,7 +3162,11 @@
             suffix = ".enc";
         }
         var report = "Filename: " + $('#timestamp-hash').data('filename') + "\nSHA256 Hash: " + $('#timestamp-hash').val() + "\nHash Source: " + source + "\nTransaction Hash: " + txid + "\nTransaction Timestamp: " + txstamp + "\nBlock Timestamp: " + blockstamp;
-        download($('#file-name').text() + suffix + '.timestamped.txt', report);
+        return {name: $('#file-name').text() + suffix, report: report};
+    }
+    $('.download-timestamp').click(function() {
+        var data = generateReport();
+        download(data.name + '.timestamped.txt', data.report);
     });
     function downloadBulk(filename, groups) {
         var zip = new JSZip();
@@ -3171,6 +3193,12 @@
             saveAs(content, filename);
         });
     }
+    /* Email Report */
+    $('#email-report-send').click(function() {
+        var email = $('#email-report-address').val();
+        var data = generateReport();
+        window.open('mailto:' + email + '?subject=' + encodeURIComponent("Timestamp report for " + data.name) + '&body=' + encodeURIComponent(data.report));
+    });
     </script>
   </body>
 </html>
