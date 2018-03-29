@@ -98,7 +98,7 @@
             </div>
             <div class="form-group">
               <label>Source</label>
-              <div>
+              <div class="radio">
                 <label class="radio-inline"><input type="radio" name="se-source" value="file" checked>File</label>
                 <label class="radio-inline"><input type="radio" name="se-source" value="sha256">SHA256 Hash</label>
                 <label class="radio-inline"><input type="radio" name="se-source" value="md5">MD5 Hash</label>
@@ -118,7 +118,7 @@
                 <input type="password" class="form-control" id="pgp-sign-passphrase" placeholder="Optional">
               </div>
               <div class="form-group">
-                <button type="submit" id="pgp-sign-generate" class="btn btn-default">Generate Signature<span class="show-multi-file">s</span></button>
+                <button type="submit" id="pgp-sign-generate" class="btn btn-success">Generate Signature<span class="show-multi-file">s</span></button>
                 <button type="button" class="btn btn-default download-pgp-signature" disabled>Download Signature<span class="show-multi-file">s</span></button>
               </div>
               <div>
@@ -146,7 +146,7 @@
                 <p class="help-block"><a href="#keys" data-toggle="modal" data-target="#keys">Generate a new private/public keypair to use</a></p>
               </div>
               <div class="form-group">
-                <button type="submit" id="pgp-enc-go" class="btn btn-default">Encrypt File<span class="show-multi-file">s</span></button>
+                <button type="submit" id="pgp-enc-go" class="btn btn-success">Encrypt File<span class="show-multi-file">s</span></button>
                 <button type="button" class="btn btn-default download-pgp-encrypted" disabled>Download Encrypted File<span class="show-multi-file">s</span></button>
               </div>
               <div>
@@ -174,7 +174,7 @@
                 <p class="help-block"><a href="#keys-rsa" data-toggle="modal" data-target="#keys-rsa">Generate a new private/public keypair to use</a></p>
               </div>
               <div class="form-group">
-                <button type="submit" id="rsa-sign-generate" class="btn btn-default">Generate Signature<span class="show-multi-file">s</span></button>
+                <button type="submit" id="rsa-sign-generate" class="btn btn-success">Generate Signature<span class="show-multi-file">s</span></button>
                 <button type="button" class="btn btn-default download-rsa-signature" disabled>Download Signature<span class="show-multi-file">s</span></button>
               </div>
               <div>
@@ -194,7 +194,7 @@
                 <p class="help-block"><a href="#keys-rsa" data-toggle="modal" data-target="#keys-rsa">Generate a new private/public keypair to use</a></p>
               </div>
               <div class="form-group">
-                <button type="submit" id="rsa-enc-go" class="btn btn-default">Encrypt File<span class="show-multi-file">s</span></button>
+                <button type="submit" id="rsa-enc-go" class="btn btn-success">Encrypt File<span class="show-multi-file">s</span></button>
                 <button type="button" class="btn btn-default download-rsa-encrypted" disabled>Download Encrypted File<span class="show-multi-file">s</span></button>
               </div>
               <div>
@@ -213,7 +213,7 @@
                 <textarea class="form-control" id="bitcoin-sign-private-key" rows="10" placeholder="Paste your private key here..."></textarea>
               </div>
               <div class="form-group">
-                <button type="submit" id="bitcoin-sign-generate" class="btn btn-default">Generate Signature<span class="show-multi-file">s</span></button>
+                <button type="submit" id="bitcoin-sign-generate" class="btn btn-success">Generate Signature<span class="show-multi-file">s</span></button>
                 <button type="button" class="btn btn-default download-bitcoin-signature" disabled>Download Signature<span class="show-multi-file">s</span></button>
               </div>
               <div>
@@ -229,7 +229,7 @@
             <form id="aes-enc-form" class="hidden">
               <div class="form-group">
                 <label>Mode</label>
-                <div>
+                <div type="radio">
                   <label class="radio-inline"><input type="radio" name="aes-enc-mode" value="cbc" checked>CBC</label>
                   <label class="radio-inline"><input type="radio" name="aes-enc-mode" value="cfb">CFB</label>
                   <label class="radio-inline"><input type="radio" name="aes-enc-mode" value="ctr">CTR</label>
@@ -239,7 +239,7 @@
               </div>
               <div class="form-group">
                 <label>Key Source</label>
-                <div>
+                <div type="radio">
                   <label class="radio-inline"><input type="radio" name="aes-enc-key-source" value="passphrase" checked>Passphrase</label>
                   <label class="radio-inline"><input type="radio" name="aes-enc-key-source" value="key">Key/IV</label>
                 </div>
@@ -257,7 +257,7 @@
                 <input type="password" class="form-control" id="aes-enc-iv">
               </div>
               <div class="form-group">
-                <button type="submit" id="aes-enc-go" class="btn btn-default">Encrypt File<span class="show-multi-file">s</span></button>
+                <button type="submit" id="aes-enc-go" class="btn btn-success">Encrypt File<span class="show-multi-file">s</span></button>
                 <button type="button" class="btn btn-default download-aes-encrypted" disabled>Download Encrypted File<span class="show-multi-file">s</span></button>
               </div>
               <div>
@@ -280,13 +280,20 @@
             <form id="timestamp-form">
               <div class="form-group">
                 <label>Source</label>
-                <div>
+                <div class="radio">
                   <label class="radio-inline"><input type="radio" name="timestamp-source" value="file" checked>File</label>
                   <label class="radio-inline"><input type="radio" name="timestamp-source" value="pgp">Signature/Encrypted File</label>
+                  <label class="radio-inline"><input type="radio" name="timestamp-source" value="text">Text</label>
                 </div>
               </div>
               <div class="form-group">
-                <button type="submit" id="timestamp-generate" class="btn btn-default">Generate Timestamp</button>
+                <label>Bitcoin Options</label>
+                <div class="checkbox">
+                  <label><input type="checkbox" id="timestamp-segwit" value="on" checked>Use SegWit address (only supported wallets)</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <button type="submit" id="timestamp-generate" class="btn btn-success">Generate Hash</button>
                 <button type="button" class="btn btn-default download-timestamp" disabled>Download Timestamp Report</button>
                 <button type="button" data-toggle="modal" data-target="#email-report" class="btn btn-default email-timestamp" disabled>Email Timestamp Report</button>
               </div>
@@ -300,7 +307,7 @@
             </div>
             <button data-toggle="modal" data-target="#paypal" class="btn btn-default" id="timestamp-paypal-button" disabled>Pay with PayPal</button>
             <a href="https://chrome.google.com/webstore/detail/protip-peer-to-peer-crowd/obpohohcmdaklmaagjgdaldgjhohegak" target="_blank" class="btn btn-default disabled" id="timestamp-protip-button">Pay with ProTip</a>
-            <button class="btn btn-default" id="timestamp-check-button" disabled>Check Payment Status</button>
+            <button class="btn btn-info" id="timestamp-check-button" disabled>Check Payment Status</button>
           </div>
           
           <!-- Verification & Decryption -->
@@ -329,13 +336,13 @@
               </div>
               <div class="form-group">
                 <label>Input Encoding</label>
-                <div>
+                <div class="radio">
                   <label class="radio-inline"><input type="radio" name="pgp-verify-encoding" value="raw" checked>Raw</label>
                   <label class="radio-inline"><input type="radio" name="pgp-verify-encoding" value="armored">ASCII-Armored</label>
                 </div>
               </div>
               <div class="form-group">
-                <button type="submit" id="pgp-verify-go" class="btn btn-default">Verify Signature(s)</button>
+                <button type="submit" id="pgp-verify-go" class="btn btn-success">Verify Signature(s)</button>
                 <button type="button" class="btn btn-default download-pgp-verified" disabled>Download Original File(s)</button>
               </div>
               <div>
@@ -356,13 +363,13 @@
               </div>
               <div class="form-group">
                 <label>Input Encoding</label>
-                <div>
+                <div class="radio">
                   <label class="radio-inline"><input type="radio" name="pgp-dec-encoding" value="raw" checked>Raw</label>
                   <label class="radio-inline"><input type="radio" name="pgp-dec-encoding" value="armored">ASCII-Armored</label>
                 </div>
               </div>
               <div class="form-group">
-                <button type="submit" id="pgp-dec-go" class="btn btn-default">Decrypt File(s)</button>
+                <button type="submit" id="pgp-dec-go" class="btn btn-success">Decrypt File(s)</button>
                 <button type="button" class="btn btn-default download-pgp-decrypted" disabled>Download Decrypted File(s)</button>
               </div>
               <div>
@@ -378,7 +385,7 @@
                 <textarea class="form-control" id="rsa-verify-public-key" rows="10" placeholder="Paste the signer's public key here..."></textarea>
               </div>
               <div class="form-group">
-                <button type="submit" id="rsa-verify-go" class="btn btn-default">Verify Signature(s)</button>
+                <button type="submit" id="rsa-verify-go" class="btn btn-success">Verify Signature(s)</button>
                 <button type="button" class="btn btn-default download-rsa-verified" disabled>Download Results</button>
               </div>
               <div>
@@ -394,7 +401,7 @@
                 <textarea class="form-control" id="rsa-dec-private-key" rows="10" placeholder="Paste your private key here..."></textarea>
               </div>
               <div class="form-group">
-                <button type="submit" id="rsa-dec-go" class="btn btn-default">Decrypt File(s)</button>
+                <button type="submit" id="rsa-dec-go" class="btn btn-success">Decrypt File(s)</button>
                 <button type="button" class="btn btn-default download-rsa-decrypted" disabled>Download Decrypted File(s)</button>
               </div>
               <div>
@@ -411,7 +418,7 @@
                 <p class="help-block">All files ending in this extension will be interpreted as signatures, whereas all other files will be interpreted as originals. Every signature should have a corresponding original file.</p>
               </div>
               <div class="form-group">
-                <button type="submit" id="bitcoin-verify-go" class="btn btn-default disabled-single-file">Verify Signature(s)</button>
+                <button type="submit" id="bitcoin-verify-go" class="btn btn-success disabled-single-file">Verify Signature(s)</button>
                 <button type="button" class="btn btn-default download-bitcoin-verified" disabled>Download Results</button>
               </div>
               <div>
@@ -424,7 +431,7 @@
             <form id="aes-dec-form" class="hidden">
               <div class="form-group">
                 <label>Mode</label>
-                <div>
+                <div class="radio">
                   <label class="radio-inline"><input type="radio" name="aes-dec-mode" value="cbc" checked>CBC</label>
                   <label class="radio-inline"><input type="radio" name="aes-dec-mode" value="cfb">CFB</label>
                   <label class="radio-inline"><input type="radio" name="aes-dec-mode" value="ctr">CTR</label>
@@ -434,7 +441,7 @@
               </div>
               <div class="form-group">
                 <label>Key Source</label>
-                <div>
+                <div class="radio">
                   <label class="radio-inline"><input type="radio" name="aes-dec-key-source" value="passphrase" checked>Passphrase</label>
                   <label class="radio-inline"><input type="radio" name="aes-dec-key-source" value="key">Key/IV</label>
                 </div>
@@ -452,7 +459,7 @@
                 <input type="password" class="form-control" id="aes-dec-iv">
               </div>
               <div class="form-group">
-                <button type="submit" id="aes-dec-go" class="btn btn-default">Decrypt File(s)</button>
+                <button type="submit" id="aes-dec-go" class="btn btn-success">Decrypt File(s)</button>
                 <button type="button" class="btn btn-default download-aes-decrypted" disabled>Download Decrypted File(s)</button>
               </div>
               <div>
